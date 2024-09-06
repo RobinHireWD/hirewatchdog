@@ -1,11 +1,16 @@
 import React, { useState } from 'react';
 import algoliasearch from 'algoliasearch/lite';
-import { InstantSearch, Hits } from 'react-instantsearch-dom';
+import { InstantSearch, connectHits } from 'react-instantsearch-dom';
 import CustomSearchBox from './CustomSearchBox';
+import { countries, applicationSources, degrees, applicationStatuses, listingDurations } from './constants';
 
 // Initialize the Algolia client with your App ID and API key
 const searchClient = algoliasearch('21GLO4JOBR', '40ade772c34eddda66c63b5e75436e35');
-const index = searchClient.initIndex('companies');
+
+// Create a connected version of Hits to pass data to the CustomSearchBox
+const CustomHits = connectHits(({ hits, onNewCompany }) => (
+  <CustomSearchBox hits={hits} onNewCompany={onNewCompany} />
+));
 
 function Tracker() {
   const [applications, setApplications] = useState([]);
@@ -20,6 +25,8 @@ function Tracker() {
     ApplicationStatus: '',
     listingDuration: '',
   });
+
+  const [searchQuery, setSearchQuery] = useState('');
 
   const handleChange = (e) => {
     setForm({
@@ -51,55 +58,30 @@ function Tracker() {
     });
   };
 
-  const getFeedbackDescription = (weeks) => {
-    if (weeks <= 2) return 'Quick';
-    if (weeks <= 4) return 'Average';
-    if (weeks <= 6) return 'Slow';
-    return 'Extremely Slow';
+  const handleCompanySelect = (company) => {
+    setForm({ ...form, company });
+    setSearchQuery(''); // Clear search query after selection
   };
-  // List of countries
-  const countries = [
-    'Afghanistan', 'Albania', 'Algeria', 'Andorra', 'Angola', 'Antigua and Barbuda', 'Argentina', 'Armenia', 'Australia', 'Austria',
-    'Azerbaijan', 'Bahamas', 'Bahrain', 'Bangladesh', 'Barbados', 'Belarus', 'Belgium', 'Belize', 'Benin', 'Bhutan', 'Bolivia', 'Bosnia and Herzegovina',
-    'Botswana', 'Brazil', 'Brunei', 'Bulgaria', 'Burkina Faso', 'Burundi', 'Cabo Verde', 'Cambodia', 'Cameroon', 'Canada', 'Central African Republic (CAR)',
-    'Chad', 'Chile', 'China', 'Colombia', 'Comoros', 'Congo', 'Costa Rica', 'Croatia', 'Cuba', 'Cyprus', 'Czech Republic', 'Democratic Republic of the Congo',
-    'Denmark', 'Djibouti', 'Dominica', 'Dominican Republic', 'Ecuador', 'Egypt', 'El Salvador', 'Equatorial Guinea', 'Eritrea', 'Estonia', 'Eswatini',
-    'Ethiopia', 'Fiji', 'Finland', 'France', 'Gabon', 'Gambia', 'Georgia', 'Germany', 'Ghana', 'Greece', 'Grenada', 'Guatemala', 'Guinea', 'Guinea-Bissau',
-    'Guyana', 'Haiti', 'Honduras', 'Hungary', 'Iceland', 'India', 'Indonesia', 'Iran', 'Iraq', 'Ireland', 'Israel', 'Italy', 'Jamaica', 'Japan', 'Jordan',
-    'Kazakhstan', 'Kenya', 'Kiribati', 'Kuwait', 'Kyrgyzstan', 'Laos', 'Latvia', 'Lebanon', 'Lesotho', 'Liberia', 'Libya', 'Liechtenstein', 'Lithuania',
-    'Luxembourg', 'Madagascar', 'Malawi', 'Malaysia', 'Maldives', 'Mali', 'Malta', 'Marshall Islands', 'Mauritania', 'Mauritius', 'Mexico', 'Micronesia',
-    'Moldova', 'Monaco', 'Mongolia', 'Montenegro', 'Morocco', 'Mozambique', 'Myanmar', 'Namibia', 'Nauru', 'Nepal', 'Netherlands', 'New Zealand', 'Nicaragua',
-    'Niger', 'Nigeria', 'North Korea', 'North Macedonia', 'Norway', 'Oman', 'Pakistan', 'Palau', 'Panama', 'Papua New Guinea', 'Paraguay', 'Peru', 'Philippines',
-    'Poland', 'Portugal', 'Qatar', 'Romania', 'Russia', 'Rwanda', 'Saint Kitts and Nevis', 'Saint Lucia', 'Saint Vincent and the Grenadines', 'Samoa', 'San Marino',
-    'Saudi Arabia', 'Senegal', 'Serbia', 'Seychelles', 'Sierra Leone', 'Singapore', 'Slovakia', 'Slovenia', 'Solomon Islands', 'Somalia', 'South Africa', 'South Korea',
-    'South Sudan', 'Spain', 'Sri Lanka', 'Sudan', 'Suriname', 'Sweden', 'Switzerland', 'Syria', 'Taiwan', 'Tajikistan', 'Tanzania', 'Thailand', 'Timor-Leste', 'Togo',
-    'Tonga', 'Trinidad and Tobago', 'Tunisia', 'Turkey', 'Turkmenistan', 'Tuvalu', 'Uganda', 'Ukraine', 'United Arab Emirates', 'United Kingdom', 'United States',
-    'Uruguay', 'Uzbekistan', 'Vanuatu', 'Vatican City', 'Venezuela', 'Vietnam', 'Yemen', 'Zambia', 'Zimbabwe'
-  ];
-
-  // List of application sources
-  const applicationSources = [
-    "Company's Website", "LinkedIn", "Indeed", "Glassdoor", "Monster", "Recruitment Agency", "Employee Referral", "Job Fair", 
-    "University Career Center", "Other"
-  ];
-
-  // List of listing durations
-  const listingDurations = Array.from({ length: 52 }, (_, i) => i + 1);
 
   return (
     <div className="Tracker">
       <h2>Application Tracker</h2>
       <form onSubmit={handleSubmit}>
+        {/* Company Name Search */}
         <label>Company Name:</label>
         <InstantSearch indexName="companies" searchClient={searchClient}>
-          <CustomSearchBox
-            onNewCompany={(company) => setForm({ ...form, company })}
-          />
-          <Hits hitComponent={Hit} />
+          <CustomHits onNewCompany={handleCompanySelect} />
         </InstantSearch>
 
+        {/* Other fields */}
         <label>Position Applied:</label>
-        <input type="text" name="position" value={form.position} onChange={handleChange} required />
+        <input
+          type="text"
+          name="position"
+          value={form.position}
+          onChange={handleChange}
+          required
+        />
 
         <label>Country:</label>
         <select name="country" value={form.country} onChange={handleChange} required>
@@ -111,7 +93,7 @@ function Tracker() {
           ))}
         </select>
 
-        <label>Feedback Time (in weeks): {getFeedbackDescription(form.feedbackTime)}</label>
+        <label>Feedback Time (in weeks):</label>
         <input
           type="range"
           name="feedbackTime"
@@ -125,15 +107,20 @@ function Tracker() {
         <label>Highest Degree:</label>
         <select name="degree" value={form.degree} onChange={handleChange} required>
           <option value="">Select Degree</option>
-          <option value="High School">High School</option>
-          <option value="Associate's">Associate's</option>
-          <option value="Bachelor's">Bachelor's</option>
-          <option value="Master's">Master's</option>
-          <option value="PhD">PhD</option>
+          {degrees.map((degree) => (
+            <option key={degree} value={degree}>
+              {degree}
+            </option>
+          ))}
         </select>
 
         <label>Application Source:</label>
-        <select name="applicationSource" value={form.applicationSource} onChange={handleChange} required>
+        <select
+          name="applicationSource"
+          value={form.applicationSource}
+          onChange={handleChange}
+          required
+        >
           <option value="">Select Source</option>
           {applicationSources.map((source) => (
             <option key={source} value={source}>
@@ -143,7 +130,11 @@ function Tracker() {
         </select>
 
         <label>Position Posting Duration (in weeks):</label>
-        <select name="listingDuration" value={form.listingDuration} onChange={handleChange}>
+        <select
+          name="listingDuration"
+          value={form.listingDuration}
+          onChange={handleChange}
+        >
           <option value="">Select Duration</option>
           {listingDurations.map((week) => (
             <option key={week} value={week}>
@@ -153,21 +144,34 @@ function Tracker() {
         </select>
 
         <label>Salary Expectation (Annual in USD):</label>
-        <input type="number" name="salaryExpectation" value={form.salaryExpectation} onChange={handleChange} placeholder="e.g., 60000" required />
+        <input
+          type="number"
+          name="salaryExpectation"
+          value={form.salaryExpectation}
+          onChange={handleChange}
+          placeholder="e.g., 60000"
+          required
+        />
 
         <label>Application Status:</label>
-        <select name="ApplicationStatus" value={form.ApplicationStatus} onChange={handleChange} required>
+        <select
+          name="ApplicationStatus"
+          value={form.ApplicationStatus}
+          onChange={handleChange}
+          required
+        >
           <option value="">Select Status</option>
-          <option value="Hired">Hired</option>
-          <option value="Interview Scheduled">Interview Scheduled</option>
-          <option value="Rejected After Interview">Rejected After Interview</option>
-          <option value="Rejected Without Interview">Rejected Without Interview</option>
-          <option value="Ghosted">Ghosted</option>
+          {applicationStatuses.map((status) => (
+            <option key={status} value={status}>
+              {status}
+            </option>
+          ))}
         </select>
 
         <button type="submit">Add Application</button>
       </form>
 
+      {/* Tracked Applications */}
       <h3>Tracked Applications:</h3>
       <ul>
         {applications.map((application, index) => (
@@ -187,12 +191,5 @@ function Tracker() {
     </div>
   );
 }
-
-// Component to render individual hits
-const Hit = ({ hit }) => (
-  <div>
-    <p>{hit.name}</p> {/* Ensure this matches your Algolia record structure */}
-  </div>
-);
 
 export default Tracker;

@@ -1,26 +1,44 @@
 .Header {
-    background-color: #282c34;
-    color: white;
-    padding: 1rem;
-    text-align: center;
-  }
-  
-  .Header nav ul {
-    list-style-type: none;
-    padding: 0;
-  }
-  
-  .Header nav ul li {
-    display: inline;
-    margin: 0 1rem;
-  }
-  
-  .Header nav ul li a {
-    color: white;
-    text-decoration: none;
-  }
-  
-  .Header nav ul li a:hover {
-    text-decoration: underline;
-  }
-  
+  background: linear-gradient(45deg, #1e3a8a, #4b6cb7); /* Gradient background to match your design */
+  color: white;
+  padding: 1.5rem;
+  text-align: center;
+  display: flex; 
+  justify-content: space-between;
+  align-items: center;
+}
+
+.Header h1 {
+  margin: 0;
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: white;
+}
+
+.Header nav ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  display: flex; /* Use Flexbox for easy alignment */
+  gap: 20px; /* Spacing between buttons */
+}
+
+.Header nav ul li {
+  margin: 0;
+}
+
+.Header nav ul li a {
+  color: white;
+  text-decoration: none;
+  font-size: 1.2rem;
+  padding: 12px 24px; /* Add padding for button-like appearance */
+  border-radius: 25px; /* Rounded corners */
+  background-color: rgba(255, 255, 255, 0.1); /* Transparent background */
+  transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition on hover */
+}
+
+.Header nav ul li a:hover {
+  background-color: #61dafb; /* Change background on hover */
+  color: #1e3a8a; /* Change text color on hover */
+  text-decoration: none;
+}

@@ -1,13 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import './Header.css'; // Assuming the styles are in this file
 
 function Header() {
   return (
-    <header className="App-header">
-      {/* Site title with correct class */}
+    <header className="Header">
       <h1 className="site-title">Hirewatchdog</h1>
       
-      {/* Navigation Menu */}
       <nav>
         <ul className="nav-links">
           <li>

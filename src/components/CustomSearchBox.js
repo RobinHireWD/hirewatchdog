@@ -1,11 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { connectSearchBox } from 'react-instantsearch-dom';
 
 const CustomSearchBox = connectSearchBox(({ currentRefinement, refine, hits = [], clearHits, onNewCompany }) => {
   const [newCompany, setNewCompany] = useState('');
 
+  useEffect(() => {
+    console.log("Current refinement (query):", currentRefinement);
+    console.log("Hits (suggested companies):", hits); // Debugging: log hits to check if data is coming through
+  }, [currentRefinement, hits]);
+
   const handleInputChange = (e) => {
-    refine(e.target.value);
+    refine(e.target.value); // This triggers the search
   };
 
   const handleCompanyClick = (company) => {
@@ -29,22 +34,28 @@ const CustomSearchBox = connectSearchBox(({ currentRefinement, refine, hits = []
         placeholder="Search for company..."
         autoFocus
       />
+
+      {/* Show hits only if there is user input */}
       <div>
-        {hits.length > 0 ? (
-          hits.map((hit) => (
-            <div key={hit.objectID}>
-              <button
-                onClick={() => handleCompanyClick(hit.name)}
-                style={{ display: 'block', margin: '5px 0', cursor: 'pointer' }}
-              >
-                {hit.name}
-              </button>
-            </div>
-          ))
-        ) : (
+        {currentRefinement && hits.length > 0 ? (
+          <div className="suggestions">
+            {hits.map((hit) => (
+              <div key={hit.objectID}>
+                <button
+                  onClick={() => handleCompanyClick(hit.name)}
+                  style={{ display: 'block', margin: '5px 0', cursor: 'pointer' }}
+                >
+                  {hit.name}
+                </button>
+              </div>
+            ))}
+          </div>
+        ) : currentRefinement.length > 0 ? (
           <p>No results found</p>
-        )}
+        ) : null}
       </div>
+
+      {/* New company section */}
       <div>
         <input
           type="text"
