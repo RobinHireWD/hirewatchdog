@@ -148,10 +148,10 @@ function Tracker() {
         <label>Interview Status:</label>
         <select name="interviewStatus" value={form.interviewStatus} onChange={handleChange} required>
           <option value="">Select Status</option>
-          <option value="Not Interviewed">Not Interviewed</option>
+          <option value="Selected">Selected</option>
           <option value="Scheduled">Scheduled</option>
-          <option value="Completed">Completed</option>
           <option value="Rejected After Interview">Rejected After Interview</option>
+          <option value="Rejected Without Interview">Rejected Without Interview</option>
         </select>
 
         <button type="submit">Add Application</button>
