@@ -1,13 +1,15 @@
 import React from 'react';
-import logo from '../assets/Logo.png'; // Import your logo
+import laptopImage from '../assets/laptop.png'; // Import your laptop illustration
 import './Home.css'; // Import CSS for Home component
 
 function Home() {
   return (
     <div className="Home">
-      <img src={logo} alt="Hirewatchdog Logo" className="logo" /> {/* Add the logo */}
-      <h1>Welcome to HireWatchdog</h1>
-      <p>Your go-to place for job application insights.</p>
+      <img src={laptopImage} alt="Laptop with code and images" className="central-image" />
+      <div className="content-box">
+        <h1>Welcome to HireWatchdog</h1>
+        <p>Your go-to place for job application insights.</p>
+      </div>
     </div>
   );
 }

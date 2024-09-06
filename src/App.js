@@ -1,11 +1,11 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Header from './components/Header';
-import Home from './pages/Home';
-import JobList from './components/JobList';
-import Tracker from './components/Tracker'; // Import the tracker
-import './App.css'; // Import your CSS file here
+import Home from './pages/Home'; // Corrected to match the import
+import JobList from './components/JobList'; // Corrected to match the import
+import Tracker from './components/Tracker'; // Import the Tracker
 
+import './App.css'; // Import your CSS file here
 
 function App() {
   return (

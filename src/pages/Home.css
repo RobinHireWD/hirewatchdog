@@ -1,9 +1,62 @@
+/* home.css */
+
+/* Import Google Font with bold weight */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap');
+
+html, body {
+  height: 100%; /* Ensure the html and body take up the full height of the viewport */
+  margin: 0; /* Remove default margin */
+}
+
+body {
+  background: linear-gradient(to right, #007AFF, #00d4ff); /* Blue gradient background for the entire screen */
+  font-family: 'Nunito', sans-serif; /* Apply the Nunito font */
+}
+
 .Home {
-    text-align: center;
-    padding: 20px;
-  }
-  
-  .Home h1 {
-    color: #333;
-  }
-  
+  position: relative; /* Establish a positioning context */
+  min-height: 100vh; /* Full-screen height */
+  display: flex;
+  align-items: center; /* Center vertically */
+  justify-content: center; /* Center horizontally */
+  padding: 0;
+  gap: 30px; /* Space between image and content box */
+  flex-wrap: wrap; /* Allow wrapping for smaller viewports */
+}
+
+.central-image {
+  max-width: 100%; /* Ensure the image doesn’t exceed its natural size */
+  height: auto;
+  display: block;
+  position: absolute; /* Position the image absolutely within the container */
+  top: 0; /* Align image to the top */
+  left: 0; /* Align image to the left */
+}
+
+.content-box {
+  background-color: rgba(255, 255, 255, 0); /* Fully transparent background */
+  padding: 30px 30px; /* Adjust padding for a smaller box */
+  border-radius: 15px; /* Rounded corners */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0); /* Add shadow for depth */
+  max-width: 400px; /* Reduce width of the content box */
+  width: 100%; /* Make it responsive */
+  color: white; /* Set default text color to white */
+  text-align: center; /* Center align text */
+  position: absolute; /* Position the content box absolutely */
+  top: 40%; /* Adjust as needed */
+  left: -40%; /* Move the content box to the far left */
+  margin-left: -10%; /* Use negative margin to push further left if needed */
+}
+
+.content-box h1 {
+  color: white; /* Set heading color to white */
+  font-size: 2.5em; /* Adjust heading size */
+  font-weight: 700; /* Bold weight for Nunito */
+  margin-bottom: 15px; /* Spacing between heading and text */
+}
+
+.content-box p {
+  color: white; /* Set paragraph text color to white */
+  font-size: 1.2em; /* Adjust text size */
+  line-height: 1.6;
+}

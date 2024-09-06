@@ -1,11 +1,15 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import './Header.css'; // Assuming the styles are in this file
+import logo from '../assets/Logo.png'; // Ensure the path to the logo image is correct
+import './Header.css'; 
 
 function Header() {
   return (
     <header className="Header">
-      <h1 className="site-title">Hirewatchdog</h1>
+      {/* Clickable logo on the left */}
+      <Link to="/" className="logo-link">
+        <img src={logo} alt="HireWatchdog Logo" className="logo" />
+      </Link>
       
       <nav>
         <ul className="nav-links">
