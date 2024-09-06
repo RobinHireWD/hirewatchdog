@@ -1,0 +1,26 @@
+.Header {
+    background-color: #282c34;
+    color: white;
+    padding: 1rem;
+    text-align: center;
+  }
+  
+  .Header nav ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .Header nav ul li {
+    display: inline;
+    margin: 0 1rem;
+  }
+  
+  .Header nav ul li a {
+    color: white;
+    text-decoration: none;
+  }
+  
+  .Header nav ul li a:hover {
+    text-decoration: underline;
+  }
+  
