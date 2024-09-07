@@ -1,13 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import algoliasearch from 'algoliasearch/lite';
 import { InstantSearch, connectHits } from 'react-instantsearch-dom';
 import CustomSearchBox from './CustomSearchBox';
 import { countries, applicationSources, degrees, applicationStatuses, listingDurations } from './constants';
+import './Tracker.css';
 
-// Initialize the Algolia client with your App ID and API key
 const searchClient = algoliasearch('21GLO4JOBR', '40ade772c34eddda66c63b5e75436e35');
 
-// Create a connected version of Hits to pass data to the CustomSearchBox
 const CustomHits = connectHits(({ hits, onNewCompany }) => (
   <CustomSearchBox hits={hits} onNewCompany={onNewCompany} isSuggestionsVisible={true} />
 ));
@@ -24,9 +23,23 @@ function Tracker() {
     salaryExpectation: '',
     ApplicationStatus: '',
     listingDuration: '',
+    experience: ''
   });
 
   const [isSuggestionsVisible, setSuggestionsVisible] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalApplications, setTotalApplications] = useState(0);
+  const limit = 5;
+
+  // Fetch applications from backend with pagination
+  useEffect(() => {
+    fetch(`/applications?page=${currentPage}&limit=${limit}`)
+      .then((res) => res.json())
+      .then((data) => {
+        setApplications(data.applications);
+        setTotalApplications(data.total);
+      });
+  }, [currentPage]);
 
   const handleChange = (e) => {
     setForm({
@@ -44,37 +57,61 @@ function Tracker() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setApplications([...applications, form]);
-    setForm({
-      company: '',
-      position: '',
-      country: '',
-      feedbackTime: 0,
-      degree: '',
-      applicationSource: '',
-      salaryExpectation: '',
-      ApplicationStatus: '',
-      listingDuration: '',
-    });
-    setSuggestionsVisible(true); // Reset suggestion visibility on form submit
+    
+    // POST form data to the backend
+    fetch('/applications', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(form),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (!data.error) {
+          setApplications([...applications, data]);
+          setForm({
+            company: '',
+            position: '',
+            country: '',
+            feedbackTime: 0,
+            degree: '',
+            applicationSource: '',
+            salaryExpectation: '',
+            ApplicationStatus: '',
+            listingDuration: '',
+            experience: ''
+          });
+          setSuggestionsVisible(true);
+        } else {
+          alert(data.error); // Handle duplicate entry case
+        }
+      });
   };
 
   const handleCompanySelect = (company) => {
     setForm({ ...form, company });
-    setSuggestionsVisible(false); // Hide suggestions after selection
+    setSuggestionsVisible(false);
+  };
+
+  const getFeedbackLabel = (value) => {
+    if (value <= 2) return 'Quick';
+    if (value <= 5) return 'Average';
+    if (value <= 7) return 'Slow';
+    return 'Extremely Slow';
+  };
+
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
   };
 
   return (
     <div className="Tracker">
       <h2>Application Tracker</h2>
       <form onSubmit={handleSubmit}>
-        {/* Company Name Search */}
         <label>Company Name:</label>
         <InstantSearch indexName="companies" searchClient={searchClient}>
           <CustomHits onNewCompany={handleCompanySelect} isSuggestionsVisible={isSuggestionsVisible} />
         </InstantSearch>
 
-        {/* Position Applied */}
         <label>Position Applied:</label>
         <input
           type="text"
@@ -84,7 +121,6 @@ function Tracker() {
           required
         />
 
-        {/* Country */}
         <label>Country:</label>
         <select name="country" value={form.country} onChange={handleChange} required>
           <option value="">Select Country</option>
@@ -95,19 +131,42 @@ function Tracker() {
           ))}
         </select>
 
-        {/* Feedback Time */}
-        <label>Feedback Time (in weeks):</label>
-        <input
-          type="range"
-          name="feedbackTime"
-          min="0"
-          max="10"
-          value={form.feedbackTime}
-          onChange={handleSliderChange}
-        />
-        <span>{form.feedbackTime} weeks</span>
+        <label>Experience in the Field (years):</label>
+        <select
+          name="experience"
+          value={form.experience}
+          onChange={handleChange}
+        >
+          <option value="">Select Experience</option>
+          <option value="0-2">0-2 years</option>
+          <option value="2-5">2-5 years</option>
+          <option value="5-10">5-10 years</option>
+          <option value="10-20">10-20 years</option>
+        </select>
 
-        {/* Highest Degree */}
+        <label>Feedback Time (in weeks):</label>
+        <div className="range-container">
+          <input
+            type="range"
+            name="feedbackTime"
+            min="0"
+            max="10"
+            step="1"
+            value={form.feedbackTime}
+            onChange={handleSliderChange}
+          />
+          <div className="range-labels">
+            <span>0</span>
+            <span>2</span>
+            <span>5</span>
+            <span>7</span>
+            <span>10</span>
+          </div>
+          <div className="range-value">
+            {form.feedbackTime} weeks - {getFeedbackLabel(form.feedbackTime)}
+          </div>
+        </div>
+
         <label>Highest Degree:</label>
         <select name="degree" value={form.degree} onChange={handleChange} required>
           <option value="">Select Degree</option>
@@ -118,7 +177,6 @@ function Tracker() {
           ))}
         </select>
 
-        {/* Application Source */}
         <label>Application Source:</label>
         <select
           name="applicationSource"
@@ -134,7 +192,6 @@ function Tracker() {
           ))}
         </select>
 
-        {/* Position Posting Duration */}
         <label>Position Posting Duration (in weeks):</label>
         <select
           name="listingDuration"
@@ -149,7 +206,6 @@ function Tracker() {
           ))}
         </select>
 
-        {/* Salary Expectation */}
         <label>Salary Expectation (Annual in USD):</label>
         <input
           type="number"
@@ -160,7 +216,6 @@ function Tracker() {
           required
         />
 
-        {/* Application Status */}
         <label>Application Status:</label>
         <select
           name="ApplicationStatus"
@@ -179,7 +234,6 @@ function Tracker() {
         <button type="submit">Add Application</button>
       </form>
 
-      {/* Tracked Applications */}
       <h3>Tracked Applications:</h3>
       <ul>
         {applications.map((application, index) => (
@@ -187,6 +241,7 @@ function Tracker() {
             <p>Company: {application.company}</p>
             <p>Position: {application.position}</p>
             <p>Country: {application.country}</p>
+            <p>Experience: {application.experience}</p>
             <p>Feedback Time: {application.feedbackTime} weeks</p>
             <p>Highest Degree: {application.degree}</p>
             <p>Application Source: {application.applicationSource}</p>
@@ -196,6 +251,14 @@ function Tracker() {
           </li>
         ))}
       </ul>
+
+      <div className="pagination">
+        {Array.from({ length: Math.ceil(totalApplications / limit) }, (_, i) => (
+          <button key={i} onClick={() => handlePageChange(i + 1)}>
+            {i + 1}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }

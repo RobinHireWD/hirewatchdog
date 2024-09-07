@@ -31,13 +31,14 @@ body {
   position: absolute; /* Position the image absolutely within the container */
   top: 0; /* Align image to the top */
   left: 0; /* Align image to the left */
+  transition: transform 0.3s ease; /* Smooth transition for transform changes */
 }
 
 .content-box {
   background-color: rgba(255, 255, 255, 0); /* Fully transparent background */
   padding: 30px 30px; /* Adjust padding for a smaller box */
   border-radius: 15px; /* Rounded corners */
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0); /* Add shadow for depth */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0); /* No shadow for a flat look */
   max-width: 400px; /* Reduce width of the content box */
   width: 100%; /* Make it responsive */
   color: white; /* Set default text color to white */
@@ -46,17 +47,40 @@ body {
   top: 40%; /* Adjust as needed */
   left: -40%; /* Move the content box to the far left */
   margin-left: -10%; /* Use negative margin to push further left if needed */
+  transition: transform 0.3s ease; /* Smooth transition for transform changes */
 }
 
 .content-box h1 {
-  color: white; /* Set heading color to white */
+  color: white !important; /* Set heading color to white and override other styles */
   font-size: 2.5em; /* Adjust heading size */
   font-weight: 700; /* Bold weight for Nunito */
   margin-bottom: 15px; /* Spacing between heading and text */
 }
 
 .content-box p {
-  color: white; /* Set paragraph text color to white */
+  color: white !important; /* Set paragraph text color to white and override other styles */
   font-size: 1.2em; /* Adjust text size */
   line-height: 1.6;
+}
+
+/* Bounce animation */
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+  60% {
+    transform: translateY(-5px);
+  }
+}
+
+/* Apply bounce effect on hover */
+.central-image:hover {
+  animation: bounce 1s ease;
+}
+
+.content-box:hover {
+  animation: bounce 1s ease;
 }

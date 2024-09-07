@@ -28,6 +28,7 @@ const CustomSearchBox = connectSearchBox(({ currentRefinement, refine, hits = []
     if (inputValue.trim() && !hits.some(hit => hit.name.toLowerCase() === inputValue.toLowerCase())) {
       onNewCompany(inputValue); // Notify parent component to add new company
       setInputValue(''); // Clear input field
+      refine(''); // Clear search refinement
     }
   };
 
@@ -47,7 +48,6 @@ const CustomSearchBox = connectSearchBox(({ currentRefinement, refine, hits = []
         autoFocus
       />
 
-      {/* Show hits only if there is user input and suggestions are visible */}
       {isSuggestionsVisible && inputValue && hits.length > 0 && (
         <div className="suggestions">
           {hits.map((hit) => (
@@ -63,7 +63,6 @@ const CustomSearchBox = connectSearchBox(({ currentRefinement, refine, hits = []
         </div>
       )}
 
-      {/* Add new company section */}
       {inputValue && !hits.some(hit => hit.name.toLowerCase() === inputValue.toLowerCase()) && (
         <div>
           <p>No suggestions match your input.</p>

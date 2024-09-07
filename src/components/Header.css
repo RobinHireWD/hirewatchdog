@@ -1,7 +1,7 @@
 /* header.css */
 
 .Header {
-  background: rgba(0, 0, 0, 0); /* Fully transparent background */
+  background: rgb(255, 255, 255); /* Fully transparent background */
   color: white;
   padding: 1.5rem 2rem;
   text-align: center;
@@ -41,7 +41,7 @@
   font-size: 1.2rem;
   padding: 12px 24px;
   border-radius: 25px;
-  background-color: rgba(255, 255, 255, 0.2); /* Slightly transparent button background */
+  background-color: #00d4ff; 
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
