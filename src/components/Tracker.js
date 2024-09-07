@@ -33,12 +33,13 @@ function Tracker() {
 
   // Fetch applications from backend with pagination
   useEffect(() => {
-    fetch(`/applications?page=${currentPage}&limit=${limit}`)
+    fetch(`http://localhost:5001/applications?page=${currentPage}&limit=${limit}`)
       .then((res) => res.json())
       .then((data) => {
         setApplications(data.applications);
         setTotalApplications(data.total);
-      });
+      })
+      .catch((error) => console.error('Error fetching applications:', error));
   }, [currentPage]);
 
   const handleChange = (e) => {
@@ -57,9 +58,8 @@ function Tracker() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
-    // POST form data to the backend
-    fetch('/applications', {
+
+    fetch('http://localhost:5001/applications', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(form),
@@ -81,9 +81,14 @@ function Tracker() {
             experience: ''
           });
           setSuggestionsVisible(true);
+          alert('Application submitted successfully!');
         } else {
-          alert(data.error); // Handle duplicate entry case
+          alert('An error occurred while submitting the application.');
         }
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        alert('An error occurred while submitting the application.');
       });
   };
 
