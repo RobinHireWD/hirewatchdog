@@ -1,11 +1,12 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Header from './components/Header';
-import Home from './pages/Home'; // Corrected to match the import
-import JobList from './components/JobList'; // Corrected to match the import
-import Tracker from './components/Tracker'; // Import the Tracker
+import Home from './pages/Home';
+import Tracker from './components/Tracker';
+import CompanyInsight from './components/CompanyInsight'; // Import the CompanyInsight component
+import Footer from './components/Footer';
 
-import './App.css'; // Import your CSS file here
+import './App.css';
 
 function App() {
   return (
@@ -15,10 +16,11 @@ function App() {
         <main>
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/jobs" element={<JobList />} />
             <Route path="/tracker" element={<Tracker />} />
+            <Route path="/company-insights" element={<CompanyInsight />} /> {/* Add CompanyInsight route */}
           </Routes>
         </main>
+        <Footer />
       </div>
     </Router>
   );

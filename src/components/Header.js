@@ -1,7 +1,8 @@
+// src/components/Header.js
 import React from 'react';
 import { Link } from 'react-router-dom';
 import logo from '../assets/Logo.png'; // Ensure the path to the logo image is correct
-import './Header.css'; 
+import './Header.css';
 
 function Header() {
   return (
@@ -17,10 +18,10 @@ function Header() {
             <Link to="/">Home</Link>
           </li>
           <li>
-            <Link to="/jobs">Job Listings</Link>
+            <Link to="/tracker">Application Tracker</Link>
           </li>
           <li>
-            <Link to="/tracker">Application Tracker</Link>
+            <Link to="/company-insights">Company Insights</Link> {/* Added link */}
           </li>
         </ul>
       </nav>

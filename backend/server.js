@@ -23,7 +23,6 @@ console.log(`DATABASE_URL: ${DATABASE_URL}`);
 // Set up PostgreSQL connection using Sequelize
 const sequelize = new Sequelize(DATABASE_URL, {
   dialect: 'postgres',
-  // Disable SSL for local development
   dialectOptions: {
     ssl: false
   }
@@ -43,10 +42,19 @@ const Application = sequelize.define('Application', {
   experience: { type: DataTypes.STRING, allowNull: true },
 });
 
-// Create the table if it doesn't exist
+// Define Company model
+const Company = sequelize.define('Company', {
+  name: { type: DataTypes.STRING, allowNull: false },
+  rating: { type: DataTypes.FLOAT, allowNull: true },
+  isGhostJob: { type: DataTypes.BOOLEAN, defaultValue: false },
+  feedbackTime: { type: DataTypes.INTEGER, allowNull: true },
+  jobPosts: { type: DataTypes.INTEGER, allowNull: true },
+});
+
+// Create the tables if they don't exist
 sequelize.sync();
 
-// Routes
+// Routes for Applications
 app.post('/applications', async (req, res) => {
   try {
     const existingApp = await Application.findOne({ where: { company: req.body.company, position: req.body.position } });
@@ -76,6 +84,42 @@ app.get('/applications', async (req, res) => {
   } catch (error) {
     console.error('Error fetching applications:', error);
     res.status(500).json({ error: 'Failed to fetch applications' });
+  }
+});
+
+// Routes for Company Insights
+app.get('/company-insights', async (req, res) => {
+  try {
+    const companies = await Company.findAll();
+    res.json(companies);
+  } catch (error) {
+    console.error('Error fetching company insights:', error);
+    res.status(500).json({ error: 'Failed to fetch company insights' });
+  }
+});
+
+app.post('/update-company-rating', async (req, res) => {
+  try {
+    const { name, rating, feedbackTime, jobPosts } = req.body;
+    
+    const company = await Company.findOne({ where: { name } });
+    if (!company) {
+      return res.status(404).json({ error: 'Company not found' });
+    }
+    
+    // Calculate if the company is posting ghost jobs
+    const isGhostJob = feedbackTime > 30 || jobPosts < 5; // Example criteria
+
+    company.rating = rating;
+    company.isGhostJob = isGhostJob;
+    company.feedbackTime = feedbackTime;
+    company.jobPosts = jobPosts;
+
+    await company.save();
+    res.json(company);
+  } catch (error) {
+    console.error('Error updating company rating:', error);
+    res.status(500).json({ error: 'Failed to update company rating' });
   }
 });
 

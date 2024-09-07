@@ -1,25 +1,26 @@
-/* header.css */
+/* src/components/Header.css */
 
+/* General header styling */
 .Header {
-  background: rgb(255, 255, 255); /* Fully transparent background */
-  color: white;
+  background: rgb(255, 255, 255); /* White background */
+  color: black; /* Black text color */
   padding: 1.5rem 2rem;
-  text-align: center;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0); /* Remove shadow for a cleaner look */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for separation */
 }
 
+/* Logo styling */
 .logo-link {
   display: flex;
   align-items: center;
-  text-decoration: none; /* Ensure the link is not underlined */
+  text-decoration: none; /* Remove underline from the link */
 }
 
 .logo {
-  width: 80px; /* Adjust the logo size */
-  height: auto; /* Ensure the logo maintains aspect ratio */
+  width: 80px; /* Adjust logo size */
+  height: auto; /* Maintain aspect ratio */
 }
 
 /* Navigation styles */
@@ -36,16 +37,29 @@
 }
 
 .Header nav ul li a {
-  color: white;
+  color: black; /* Black text color */
   text-decoration: none;
   font-size: 1.2rem;
   padding: 12px 24px;
   border-radius: 25px;
-  background-color: #00d4ff; 
+  background-color: #00d4ff; /* Light blue background */
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .Header nav ul li a:hover {
-  background-color: #f7f7f7;
-  color: #1e3a8a;
+  background-color: #f7f7f7; /* Light grey background on hover */
+  color: #1e3a8a; /* Dark blue text color on hover */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .Header {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .Header nav ul {
+    flex-direction: column;
+    gap: 15px; /* Reduced gap for smaller screens */
+  }
 }
