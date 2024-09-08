@@ -1,6 +1,6 @@
-// Load environment variables from config.env file
-require('dotenv').config({ path: './config.env' });
+// backend/server.js
 
+require('dotenv').config({ path: './config.env' });
 const express = require('express');
 const cors = require('cors');
 const { Sequelize, DataTypes } = require('sequelize');
@@ -51,21 +51,42 @@ const Company = sequelize.define('Company', {
   jobPosts: { type: DataTypes.INTEGER, allowNull: true },
 });
 
+// Establish associations
+Company.hasMany(Application, { foreignKey: 'company' });
+Application.belongsTo(Company, { foreignKey: 'company' });
+
 // Create the tables if they don't exist
 sequelize.sync();
 
 // Routes for Applications
-app.post('/applications', async (req, res) => {
+// Update Companies table with aggregate data
+app.post('/update-company-metrics', async (req, res) => {
   try {
-    const existingApp = await Application.findOne({ where: { company: req.body.company, position: req.body.position } });
-    if (existingApp) {
-      return res.status(400).json({ error: 'Application already exists' });
+    const { name } = req.body;
+
+    // Fetch all applications for the company
+    const applications = await Application.findAll({ where: { company: name } });
+
+    // Calculate metrics
+    const numApplicants = applications.length;
+    const totalFeedbackTime = applications.reduce((sum, app) => sum + app.feedbackTime, 0);
+    const avgFeedbackTime = numApplicants ? totalFeedbackTime / numApplicants : 0;
+    const ghostJobProbability = numApplicants ? applications.filter(app => app.feedbackTime > 30 || app.jobPosts < 5).length / numApplicants : 0;
+
+    // Update the Companies table
+    const company = await Company.findOne({ where: { name } });
+    if (company) {
+      company.numApplicants = numApplicants;
+      company.avgFeedbackTime = avgFeedbackTime;
+      company.ghostJobProbability = ghostJobProbability;
+      await company.save();
+      res.json(company);
+    } else {
+      res.status(404).json({ error: 'Company not found' });
     }
-    const application = await Application.create(req.body);
-    res.status(201).json(application);
   } catch (error) {
-    console.error('Error adding application:', error);
-    res.status(500).json({ error: 'Failed to add application' });
+    console.error('Error updating company metrics:', error);
+    res.status(500).json({ error: `Failed to update company metrics: ${error.message}` });
   }
 });
 
@@ -83,18 +104,25 @@ app.get('/applications', async (req, res) => {
     res.json({ applications: rows, total: count });
   } catch (error) {
     console.error('Error fetching applications:', error);
-    res.status(500).json({ error: 'Failed to fetch applications' });
+    res.status(500).json({ error: `Failed to fetch applications: ${error.message}` });
   }
 });
 
 // Routes for Company Insights
-app.get('/company-insights', async (req, res) => {
+app.get('/api/company-insights', async (req, res) => {
   try {
-    const companies = await Company.findAll();
+    console.log('Fetching company insights...');
+    const companies = await Company.findAll({
+      include: {
+        model: Application,
+        attributes: ['feedbackTime', 'jobPosts']
+      }
+    });
+    console.log('Fetched companies:', companies);
     res.json(companies);
   } catch (error) {
     console.error('Error fetching company insights:', error);
-    res.status(500).json({ error: 'Failed to fetch company insights' });
+    res.status(500).json({ error: `Failed to fetch company insights: ${error.message}` });
   }
 });
 
@@ -119,7 +147,7 @@ app.post('/update-company-rating', async (req, res) => {
     res.json(company);
   } catch (error) {
     console.error('Error updating company rating:', error);
-    res.status(500).json({ error: 'Failed to update company rating' });
+    res.status(500).json({ error: `Failed to update company rating: ${error.message}` });
   }
 });
 
