@@ -11,6 +11,11 @@ const CustomHits = connectHits(({ hits, onNewCompany }) => (
   <CustomSearchBox hits={hits} onNewCompany={onNewCompany} isSuggestionsVisible={true} />
 ));
 
+// Utility function to capitalize the first letter of a string
+const capitalizeFirstLetter = (string) => {
+  return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+};
+
 function Tracker() {
   const [applications, setApplications] = useState([]);
   const [form, setForm] = useState({
@@ -23,10 +28,12 @@ function Tracker() {
     salaryexpectation: '',
     applicationstatus: '',
     listingduration: '',
-    experience: ''
+    experience: '',
+    newCompany: '' // Add this field for new company
   });
 
   const [isSuggestionsVisible, setSuggestionsVisible] = useState(true);
+  const [isAddingNewCompany, setAddingNewCompany] = useState(false); // Track if user wants to add a new company
   const [currentPage, setCurrentPage] = useState(1);
   const [totalApplications, setTotalApplications] = useState(0);
   const limit = 5;
@@ -59,10 +66,13 @@ function Tracker() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    // Use the new company name if adding a new one and capitalize it
+    const company = isAddingNewCompany ? capitalizeFirstLetter(form.newCompany) : capitalizeFirstLetter(form.company);
+
     fetch('http://localhost:5001/applications', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(form),
+      body: JSON.stringify({ ...form, company }),
     })
       .then((res) => res.json())
       .then((data) => {
@@ -78,9 +88,11 @@ function Tracker() {
             salaryexpectation: '',
             applicationstatus: '',
             listingduration: '',
-            experience: ''
+            experience: '',
+            newCompany: '' // Reset new company field
           });
           setSuggestionsVisible(true);
+          setAddingNewCompany(false); // Reset new company addition flag
           alert('Application submitted successfully!');
         } else {
           alert('An error occurred while submitting the application.');
@@ -93,8 +105,12 @@ function Tracker() {
   };
 
   const handleCompanySelect = (company) => {
-    setForm({ ...form, company });
+    setForm({ ...form, company: capitalizeFirstLetter(company) });
     setSuggestionsVisible(false);
+  };
+
+  const handleNewCompanyChange = (e) => {
+    setForm({ ...form, newCompany: e.target.value });
   };
 
   const getFeedbackLabel = (value) => {
@@ -116,6 +132,24 @@ function Tracker() {
         <InstantSearch indexName="companies" searchClient={searchClient}>
           <CustomHits onNewCompany={handleCompanySelect} isSuggestionsVisible={isSuggestionsVisible} />
         </InstantSearch>
+
+        {/* New Company Input Field */}
+        {isAddingNewCompany && (
+          <>
+            <label>New Company Name:</label>
+            <input
+              type="text"
+              name="newCompany"
+              value={form.newCompany}
+              onChange={handleNewCompanyChange}
+              required
+            />
+          </>
+        )}
+
+        <button type="button" onClick={() => setAddingNewCompany(!isAddingNewCompany)}>
+          {isAddingNewCompany ? 'Select Existing Company' : 'Add New Company'}
+        </button>
 
         <label>Position Applied:</label>
         <input

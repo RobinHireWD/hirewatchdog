@@ -24,14 +24,6 @@ const CustomSearchBox = connectSearchBox(({ currentRefinement, refine, hits = []
     onNewCompany(company); // Notify parent component
   };
 
-  const handleAddNewCompany = () => {
-    if (inputValue.trim() && !hits.some(hit => hit.name.toLowerCase() === inputValue.toLowerCase())) {
-      onNewCompany(inputValue); // Notify parent component to add new company
-      setInputValue(''); // Clear input field
-      refine(''); // Clear search refinement
-    }
-  };
-
   const handleClearSearch = () => {
     setInputValue(''); // Clear input value
     refine(''); // Clear search refinement
@@ -44,7 +36,7 @@ const CustomSearchBox = connectSearchBox(({ currentRefinement, refine, hits = []
         type="text"
         value={inputValue}
         onChange={handleInputChange}
-        placeholder="Search for company or enter a new one..."
+        placeholder="Search for company..."
         autoFocus
       />
 
@@ -63,13 +55,8 @@ const CustomSearchBox = connectSearchBox(({ currentRefinement, refine, hits = []
         </div>
       )}
 
-      {inputValue && !hits.some(hit => hit.name.toLowerCase() === inputValue.toLowerCase()) && (
-        <div>
-          <p>No suggestions match your input.</p>
-          <button onClick={handleAddNewCompany}>Add "{inputValue}" as a new company</button>
-        </div>
-      )}
-
+      {/* Removed the section for adding a new company */}
+      
       <button onClick={handleClearSearch} style={{ marginTop: '10px' }}>Clear Search</button>
     </div>
   );

@@ -23,6 +23,13 @@ def fetch_applications(conn):
         cur.execute(query)
         return cur.fetchall()
 
+def fetch_companies(conn):
+    """Fetch company data from the database."""
+    query = 'SELECT * FROM "Companies"'
+    with conn.cursor(cursor_factory=DictCursor) as cur:
+        cur.execute(query)
+        return cur.fetchall()
+
 def analyze_applications(applications):
     """Analyze applications to determine metrics."""
     feedback_time_threshold = 4  # weeks
@@ -66,26 +73,41 @@ def analyze_applications(applications):
 
     return results
 
+def calculate_jobposts(conn, company_id):
+    """Calculate the number of distinct job posts for a given company."""
+    query = """
+        SELECT COUNT(DISTINCT "position") AS jobposts
+        FROM "Applications"
+        WHERE company_id = %s
+    """
+    with conn.cursor(cursor_factory=DictCursor) as cur:
+        cur.execute(query, (company_id,))
+        result = cur.fetchone()
+        return result['jobposts']
+
 def update_company(conn, company_id, metrics):
     """Update the company's metrics in the database."""
+    jobposts = calculate_jobposts(conn, company_id)
+    
     query = """
         UPDATE "Companies"
-        SET rating = %s,  -- Assuming a default value or separate calculation
+        SET
+            rating = %s,  -- Assuming a default value or separate calculation
             isghostjob = %s,
-            num_feedback = %s,  -- Number of feedback entries
-            jobposts = (SELECT COUNT(DISTINCT "position") FROM "Applications" WHERE company_id = %s),
+            num_feedback = %s,
+            jobposts = %s,
             numapplicants = %s,
             avgfeedbacktime = %s,
             ghostjobprobability = %s,
-            updated_at = CURRENT_TIMESTAMP
+            updatedAt = CURRENT_TIMESTAMP
         WHERE id = %s
     """
     with conn.cursor() as cur:
         cur.execute(query, (
             0,  # Assuming a rating is calculated separately
             metrics['is_ghost_job'],
-            metrics['num_applicants'],  # Use the count of feedback
-            company_id,
+            metrics['num_applicants'],
+            jobposts,
             metrics['num_applicants'],
             metrics['avg_feedback_time'],
             metrics['ghost_job_probability'],

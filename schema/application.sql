@@ -5,12 +5,12 @@ CREATE TABLE IF NOT EXISTS "Applications" (
     company_id INTEGER REFERENCES "Companies"(id) ON DELETE SET NULL, -- Foreign key reference
     position VARCHAR(255) NOT NULL,
     country VARCHAR(255) NOT NULL,
-    feedbacktime INTEGER NOT NULL,
+    feedbacktime INTEGER NOT NULL, -- Feedback time in weeks
     degree VARCHAR(255) NOT NULL,
     applicationsource VARCHAR(255) NOT NULL,
     salaryexpectation INTEGER NOT NULL,
     applicationstatus VARCHAR(255) NOT NULL,
-    listingduration INTEGER NOT NULL,
+    listingduration INTEGER NOT NULL, -- Listing duration in days
     experience VARCHAR(255) NOT NULL,
     createdat TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
     updatedat TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
