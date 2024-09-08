@@ -1,16 +1,17 @@
--- Create Applications Table with a reference to Companies
+-- Create Applications table with foreign key reference
 CREATE TABLE IF NOT EXISTS "Applications" (
     id SERIAL PRIMARY KEY,
-    company_id INTEGER REFERENCES "Companies"(id) ON DELETE CASCADE, -- Foreign key to Companies table
+    company VARCHAR(255) NOT NULL, -- Store company name
+    company_id INTEGER REFERENCES "Companies"(id) ON DELETE SET NULL, -- Foreign key reference
     position VARCHAR(255) NOT NULL,
     country VARCHAR(255) NOT NULL,
-    feedbackTime INTEGER NOT NULL,
+    feedbacktime INTEGER NOT NULL,
     degree VARCHAR(255) NOT NULL,
-    applicationSource VARCHAR(255) NOT NULL,
-    salaryExpectation INTEGER NOT NULL,
-    ApplicationStatus VARCHAR(255) NOT NULL,
-    listingDuration INTEGER NOT NULL,
+    applicationsource VARCHAR(255) NOT NULL,
+    salaryexpectation INTEGER NOT NULL,
+    applicationstatus VARCHAR(255) NOT NULL,
+    listingduration INTEGER NOT NULL,
     experience VARCHAR(255) NOT NULL,
-    createdAt TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
-    updatedAt TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+    createdat TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    updatedat TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );

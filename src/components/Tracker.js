@@ -17,12 +17,12 @@ function Tracker() {
     company: '',
     position: '',
     country: '',
-    feedbackTime: 0,
+    feedbacktime: 0,
     degree: '',
-    applicationSource: '',
-    salaryExpectation: '',
-    ApplicationStatus: '',
-    listingDuration: '',
+    applicationsource: '',
+    salaryexpectation: '',
+    applicationstatus: '',
+    listingduration: '',
     experience: ''
   });
 
@@ -52,7 +52,7 @@ function Tracker() {
   const handleSliderChange = (e) => {
     setForm({
       ...form,
-      feedbackTime: e.target.value
+      feedbacktime: e.target.value
     });
   };
 
@@ -72,12 +72,12 @@ function Tracker() {
             company: '',
             position: '',
             country: '',
-            feedbackTime: 0,
+            feedbacktime: 0,
             degree: '',
-            applicationSource: '',
-            salaryExpectation: '',
-            ApplicationStatus: '',
-            listingDuration: '',
+            applicationsource: '',
+            salaryexpectation: '',
+            applicationstatus: '',
+            listingduration: '',
             experience: ''
           });
           setSuggestionsVisible(true);
@@ -153,26 +153,15 @@ function Tracker() {
         <div className="range-container">
           <input
             type="range"
-            name="feedbackTime"
             min="0"
-            max="10"
-            step="1"
-            value={form.feedbackTime}
+            max="12"
+            value={form.feedbacktime}
             onChange={handleSliderChange}
           />
-          <div className="range-labels">
-            <span>0</span>
-            <span>2</span>
-            <span>5</span>
-            <span>7</span>
-            <span>10</span>
-          </div>
-          <div className="range-value">
-            {form.feedbackTime} weeks - {getFeedbackLabel(form.feedbackTime)}
-          </div>
+          <span>{getFeedbackLabel(form.feedbacktime)}</span>
         </div>
 
-        <label>Highest Degree:</label>
+        <label>Degree:</label>
         <select name="degree" value={form.degree} onChange={handleChange} required>
           <option value="">Select Degree</option>
           {degrees.map((degree) => (
@@ -184,8 +173,8 @@ function Tracker() {
 
         <label>Application Source:</label>
         <select
-          name="applicationSource"
-          value={form.applicationSource}
+          name="applicationsource"
+          value={form.applicationsource}
           onChange={handleChange}
           required
         >
@@ -197,34 +186,19 @@ function Tracker() {
           ))}
         </select>
 
-        <label>Position Posting Duration (in weeks):</label>
-        <select
-          name="listingDuration"
-          value={form.listingDuration}
-          onChange={handleChange}
-        >
-          <option value="">Select Duration</option>
-          {listingDurations.map((week) => (
-            <option key={week} value={week}>
-              {week} week{week > 1 ? 's' : ''}
-            </option>
-          ))}
-        </select>
-
-        <label>Salary Expectation (Annual in USD):</label>
+        <label>Salary Expectation (in USD):</label>
         <input
           type="number"
-          name="salaryExpectation"
-          value={form.salaryExpectation}
+          name="salaryexpectation"
+          value={form.salaryexpectation}
           onChange={handleChange}
-          placeholder="e.g., 60000"
           required
         />
 
         <label>Application Status:</label>
         <select
-          name="ApplicationStatus"
-          value={form.ApplicationStatus}
+          name="applicationstatus"
+          value={form.applicationstatus}
           onChange={handleChange}
           required
         >
@@ -236,33 +210,59 @@ function Tracker() {
           ))}
         </select>
 
-        <button type="submit">Add Application</button>
+        <label>Listing Duration (weeks):</label>
+        <input
+          type="number"
+          name="listingduration"
+          value={form.listingduration}
+          onChange={handleChange}
+        />
+
+        <button type="submit">Submit Application</button>
       </form>
 
-      <h3>Tracked Applications:</h3>
-      <ul>
-        {applications.map((application, index) => (
-          <li key={index}>
-            <p>Company: {application.company}</p>
-            <p>Position: {application.position}</p>
-            <p>Country: {application.country}</p>
-            <p>Experience: {application.experience}</p>
-            <p>Feedback Time: {application.feedbackTime} weeks</p>
-            <p>Highest Degree: {application.degree}</p>
-            <p>Application Source: {application.applicationSource}</p>
-            <p>Position Posting Duration: {application.listingDuration} week{application.listingDuration > 1 ? 's' : ''}</p>
-            <p>Salary Expectation: ${application.salaryExpectation}</p>
-            <p>Application Status: {application.ApplicationStatus}</p>
-          </li>
-        ))}
-      </ul>
+      <h3>Tracked Applications</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Company</th>
+            <th>Position</th>
+            <th>Country</th>
+            <th>Feedback Time</th>
+            <th>Degree</th>
+            <th>Application Source</th>
+            <th>Salary Expectation</th>
+            <th>Status</th>
+            <th>Listing Duration</th>
+            <th>Experience</th>
+          </tr>
+        </thead>
+        <tbody>
+          {applications.map((app) => (
+            <tr key={app.id}>
+              <td>{app.company}</td>
+              <td>{app.position}</td>
+              <td>{app.country}</td>
+              <td>{app.feedbacktime}</td>
+              <td>{app.degree}</td>
+              <td>{app.applicationsource}</td>
+              <td>{app.salaryexpectation}</td>
+              <td>{app.applicationstatus}</td>
+              <td>{app.listingduration}</td>
+              <td>{app.experience}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
 
       <div className="pagination">
-        {Array.from({ length: Math.ceil(totalApplications / limit) }, (_, i) => (
-          <button key={i} onClick={() => handlePageChange(i + 1)}>
-            {i + 1}
-          </button>
-        ))}
+        <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
+          Previous
+        </button>
+        <span>Page {currentPage}</span>
+        <button onClick={() => handlePageChange(currentPage + 1)} disabled={(currentPage * limit) >= totalApplications}>
+          Next
+        </button>
       </div>
     </div>
   );

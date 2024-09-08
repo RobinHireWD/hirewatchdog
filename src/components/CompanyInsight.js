@@ -37,13 +37,13 @@ const CompanyInsight = () => {
 
   const calculateAverageResponseTime = (applications) => {
     if (!applications || applications.length === 0) return 0;
-    const totalFeedbackTime = applications.reduce((sum, app) => sum + app.feedbackTime, 0);
+    const totalFeedbackTime = applications.reduce((sum, app) => sum + app.feedbacktime, 0);
     return (totalFeedbackTime / applications.length / 7).toFixed(2); // Convert to weeks
   };
 
   const calculateGhostJobProbability = (applications) => {
     if (!applications || applications.length === 0) return 0;
-    const ghostJobs = applications.filter(app => app.feedbackTime > 30 || app.jobPosts < 5).length;
+    const ghostJobs = applications.filter(app => app.feedbacktime > 30 || app.jobPosts < 5).length;
     return ((ghostJobs / applications.length) * 100).toFixed(2); // Probability as a percentage
   };
 
@@ -69,7 +69,7 @@ const CompanyInsight = () => {
               <td>{company.name}</td>
               <td>{company.rating}</td>
               <td>{company.isGhostJob ? 'Yes' : 'No'}</td>
-              <td>{company.feedbackTime}</td>
+              <td>{company.feedbacktime}</td>
               <td>{company.jobPosts !== null ? company.jobPosts : 'N/A'}</td>
             </tr>
           ))}
@@ -81,7 +81,7 @@ const CompanyInsight = () => {
           <h2>{selectedCompany.name}</h2>
           <p><strong>Rating:</strong> {selectedCompany.rating}</p>
           <p><strong>Is Ghost Job:</strong> {selectedCompany.isGhostJob ? 'Yes' : 'No'}</p>
-          <p><strong>Feedback Time:</strong> {selectedCompany.feedbackTime}</p>
+          <p><strong>Feedback Time:</strong> {selectedCompany.feedbacktime}</p>
           <p><strong>Job Posts:</strong> {selectedCompany.jobPosts !== null ? selectedCompany.jobPosts : 'N/A'}</p>
           
           {/* Calculate and display additional details */}
