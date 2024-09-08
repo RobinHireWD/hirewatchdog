@@ -23,7 +23,7 @@ def fetch_applications(conn):
 
 def analyze_applications(applications):
     """Analyze applications to determine metrics."""
-    feedback_time_threshold = 30  # days
+    feedback_time_threshold = 4  # weeks
     ghost_job_probability_threshold = 50  # percentage
 
     company_metrics = {}
@@ -51,7 +51,7 @@ def analyze_applications(applications):
             ghost_job_probability = 0
             is_ghost_job = False
         else:
-            avg_feedback_time = metrics['total_feedback_time'] / total_applications / 7  # Convert to weeks
+            avg_feedback_time = metrics['total_feedback_time'] / total_applications
             ghost_job_probability = (metrics['long_feedback_time_count'] / total_applications) * 100
             is_ghost_job = ghost_job_probability > ghost_job_probability_threshold
 
@@ -67,10 +67,10 @@ def analyze_applications(applications):
 def update_company(conn, company_id, metrics):
     """Update the company's metrics in the database."""
     query = """
-        UPDATE "Companies"  -- Use double quotes for correct table reference
-        SET rating = %s,
+        UPDATE "Companies"
+        SET rating = %s,  -- Assuming a default value or separate calculation
             isghostjob = %s,
-            feedbacktime = %s,
+            num_feedback = %s,  -- Number of feedback entries
             jobposts = (SELECT COUNT(DISTINCT "position") FROM "Applications" WHERE company_id = %s),
             numapplicants = %s,
             avgfeedbacktime = %s,
@@ -82,7 +82,7 @@ def update_company(conn, company_id, metrics):
         cur.execute(query, (
             0,  # Assuming a rating is calculated separately
             metrics['is_ghost_job'],
-            metrics['avg_feedback_time'],
+            metrics['num_applicants'],  # Use the count of feedback
             company_id,
             metrics['num_applicants'],
             metrics['avg_feedback_time'],

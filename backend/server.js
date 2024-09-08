@@ -2,6 +2,7 @@ require('dotenv').config({ path: './config.env' });
 const express = require('express');
 const cors = require('cors');
 const { Sequelize, DataTypes } = require('sequelize');
+const winston = require('winston');
 
 // Initialize express app
 const app = express();
@@ -158,6 +159,7 @@ const findOrCreateCompany = async (companyName) => {
 
 // Routes for Applications
 app.post('/applications', async (req, res) => {
+  console.log('Received request to create application');
   try {
     const {
       company,
@@ -216,12 +218,11 @@ app.post('/applications', async (req, res) => {
 });
 
 app.get('/applications', async (req, res) => {
+  console.log('Fetching applications');
   try {
     const limit = parseInt(req.query.limit, 10) || 5;
     const page = parseInt(req.query.page, 10) || 1;
     const offset = (page - 1) * limit;
-
-    console.log(`Fetching applications with limit ${limit} and page ${page}`);
 
     const { count, rows } = await Application.findAndCountAll({
       limit,
@@ -236,15 +237,14 @@ app.get('/applications', async (req, res) => {
 
 // Routes for Company Insights
 app.get('/api/company-insights', async (req, res) => {
+  console.log('Fetching company insights');
   try {
-    console.log('Fetching company insights...');
     const companies = await Company.findAll({
       include: {
         model: Application,
         attributes: ['feedbacktime', 'jobposts']
       }
     });
-    console.log('Fetched companies:', companies);
     res.json(companies);
   } catch (error) {
     handleError(res, error, 'Failed to fetch company insights');
@@ -252,9 +252,9 @@ app.get('/api/company-insights', async (req, res) => {
 });
 
 app.post('/update-company-rating', async (req, res) => {
+  console.log('Updating company rating');
   try {
     const { name, rating, feedbacktime, jobposts } = req.body;
-    console.log(`Updating rating for company: ${name}`);
 
     const company = await Company.findOne({ where: { name } });
     if (!company) {
@@ -273,6 +273,19 @@ app.post('/update-company-rating', async (req, res) => {
   } catch (error) {
     handleError(res, error, 'Failed to update company rating');
   }
+});
+
+// Global error handling
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught Exception:', error);
+  // Optionally exit the process
+  process.exit(1);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection:', reason);
+  // Optionally exit the process
+  process.exit(1);
 });
 
 // Start the server
