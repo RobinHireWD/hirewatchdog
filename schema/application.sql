@@ -15,3 +15,18 @@ CREATE TABLE IF NOT EXISTS "Applications" (
     createdat TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
     updatedat TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Function to notify when an application is inserted or updated
+CREATE OR REPLACE FUNCTION notify_application_update()
+RETURNS trigger AS $$
+BEGIN
+    PERFORM pg_notify('application_update', 'Application data updated');
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Create the trigger
+CREATE TRIGGER application_update_trigger
+AFTER INSERT OR UPDATE ON "Applications"
+FOR EACH ROW
+EXECUTE FUNCTION notify_application_update();

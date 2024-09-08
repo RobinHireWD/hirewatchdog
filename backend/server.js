@@ -2,7 +2,7 @@ require('dotenv').config({ path: './config.env' });
 const express = require('express');
 const cors = require('cors');
 const { Sequelize, DataTypes } = require('sequelize');
-const winston = require('winston');
+const winston = require('winston'); // Logging
 
 // Initialize express app
 const app = express();
@@ -54,7 +54,7 @@ const Application = sequelize.define('Application', {
     type: DataTypes.STRING,
     allowNull: false
   },
-  feedbacktime: {
+  feedbacktime: {  // Keep feedbacktime here for Application
     type: DataTypes.INTEGER,
     allowNull: false
   },
@@ -88,7 +88,7 @@ const Application = sequelize.define('Application', {
   underscored: true
 });
 
-// Define Company model
+// Define Company model with num_feedback instead of feedbacktime
 const Company = sequelize.define('Company', {
   id: {
     type: DataTypes.INTEGER,
@@ -108,9 +108,10 @@ const Company = sequelize.define('Company', {
     type: DataTypes.BOOLEAN,
     defaultValue: false
   },
-  feedbacktime: {
+  num_feedback: {  // Changed feedbacktime to num_feedback
     type: DataTypes.INTEGER,
-    allowNull: true
+    allowNull: true,
+    defaultValue: 0
   },
   jobposts: {
     type: DataTypes.INTEGER,
@@ -177,11 +178,11 @@ app.post('/applications', async (req, res) => {
     // Detailed validation
     const missingFields = [];
     if (!company) missingFields.push('company');
-    if (!feedbacktime && feedbacktime !== 0) missingFields.push('feedbacktime');
+    if (feedbacktime === undefined) missingFields.push('feedbacktime');
     if (!applicationsource) missingFields.push('applicationsource');
-    if (!salaryexpectation && salaryexpectation !== 0) missingFields.push('salaryexpectation');
+    if (salaryexpectation === undefined) missingFields.push('salaryexpectation');
     if (!applicationstatus) missingFields.push('applicationstatus');
-    if (!listingduration && listingduration !== 0) missingFields.push('listingduration');
+    if (listingduration === undefined) missingFields.push('listingduration');
 
     if (missingFields.length > 0) {
       return res.status(400).json({ error: `Missing required fields: ${missingFields.join(', ')}` });
@@ -242,7 +243,7 @@ app.get('/api/company-insights', async (req, res) => {
     const companies = await Company.findAll({
       include: {
         model: Application,
-        attributes: ['feedbacktime', 'jobposts']
+        attributes: ['feedbacktime'] // Include only available fields
       }
     });
     res.json(companies);
@@ -251,21 +252,22 @@ app.get('/api/company-insights', async (req, res) => {
   }
 });
 
+// Route to update company rating (num_feedback and other fields updated here)
 app.post('/update-company-rating', async (req, res) => {
   console.log('Updating company rating');
   try {
-    const { name, rating, feedbacktime, jobposts } = req.body;
+    const { name, rating, num_feedback, jobposts } = req.body;
 
     const company = await Company.findOne({ where: { name } });
     if (!company) {
       return res.status(404).json({ error: 'Company not found' });
     }
 
-    const isghostjob = feedbacktime > 30 || jobposts < 5; // Example criteria
+    const isghostjob = num_feedback < 5 || jobposts < 5; // Example criteria for ghost job
 
     company.rating = rating;
     company.isghostjob = isghostjob;
-    company.feedbacktime = feedbacktime;
+    company.num_feedback = num_feedback;
     company.jobposts = jobposts;
 
     await company.save();

@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS "Companies" (
     name VARCHAR(255) NOT NULL UNIQUE,
     rating FLOAT,
     isghostjob BOOLEAN DEFAULT FALSE,
-    feedbacktime INTEGER,
+    num_feedback INTEGER,
     jobposts INTEGER,
     numapplicants INTEGER DEFAULT 0,
     avgfeedbacktime FLOAT DEFAULT 0,
@@ -12,7 +12,6 @@ CREATE TABLE IF NOT EXISTS "Companies" (
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-
 -- Create function to update company metrics
 CREATE OR REPLACE FUNCTION update_company_metrics() RETURNS TRIGGER AS $$
 DECLARE

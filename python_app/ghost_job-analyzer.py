@@ -1,5 +1,7 @@
 import psycopg2
+import psycopg2.extensions
 from psycopg2.extras import DictCursor
+import time
 
 # Database connection settings
 DATABASE = {
@@ -91,19 +93,35 @@ def update_company(conn, company_id, metrics):
         ))
         conn.commit()
 
-def main():
+def listen_for_notifications():
+    """Listen for notifications and process data."""
     conn = connect_db()
+    conn.set_isolation_level(psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT)
+    cur = conn.cursor()
+    cur.execute("LISTEN application_update;")
 
+    print("Listening for notifications on channel 'application_update'...")
     try:
-        applications = fetch_applications(conn)
-        company_metrics = analyze_applications(applications)
+        while True:
+            # Wait for a notification
+            if conn.notifies:
+                for notify in conn.notifies:
+                    print(f"Received notification: {notify.payload}")
+                    # Fetch updated applications and process them
+                    applications = fetch_applications(conn)
+                    company_metrics = analyze_applications(applications)
 
-        for company_id, metrics in company_metrics.items():
-            update_company(conn, company_id, metrics)
+                    for company_id, metrics in company_metrics.items():
+                        update_company(conn, company_id, metrics)
+                    print("Companies table updated successfully.")
 
-        print("Companies table updated successfully.")
+            time.sleep(5)  # Polling interval
+
+    except KeyboardInterrupt:
+        print("Stopped by user.")
     finally:
+        cur.close()
         conn.close()
 
 if __name__ == '__main__':
-    main()
+    listen_for_notifications()
