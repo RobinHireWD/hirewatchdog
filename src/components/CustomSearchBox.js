@@ -36,7 +36,7 @@ const CustomSearchBox = connectSearchBox(({ currentRefinement, refine, hits = []
         type="text"
         value={inputValue}
         onChange={handleInputChange}
-        placeholder="Search for company..."
+        placeholder="Search For Company..."
         autoFocus
       />
 

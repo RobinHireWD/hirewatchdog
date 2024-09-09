@@ -1,148 +1,125 @@
+/* General Styles */
 .Tracker {
-    position: relative;
-    padding: 20px;
-    margin-left: 0;
-  }
-  
-  form {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  form label {
-    margin-bottom: 8px;
-    font-weight: bold;
-  }
-  
-  form input,
-  form select {
-    margin-bottom: 12px;
-  }
-  
-  form input[type="text"],
-  form input[type="number"],
-  form input[type="range"] {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-  }
-  
-  form input[type="range"] {
-    -webkit-appearance: none;
-    background: transparent;
-    border-radius: 5px;
-    height: 8px;
-    cursor: pointer;
-    outline: none;
-    position: relative;
-  }
-  
-  form input[type="range"]::-webkit-slider-runnable-track {
-    background: #ddd;
-    border-radius: 5px;
-    height: 8px;
-  }
-  
-  form input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 20px;
-    height: 20px;
-    background: #61dafb;
-    border-radius: 50%;
-    cursor: pointer;
-    position: relative;
-    top: -6px;
-  }
-  
-  form input[type="range"]::-moz-range-track {
-    background: #ddd;
-    border-radius: 5px;
-    height: 8px;
-  }
-  
-  form input[type="range"]::-moz-range-thumb {
-    width: 20px;
-    height: 20px;
-    background: #61dafb;
-    border-radius: 50%;
-    cursor: pointer;
-  }
-  
-  form input[type="range"]::-ms-track {
-    background: transparent;
-    border-color: transparent;
-    color: transparent;
-    height: 8px;
-  }
-  
-  form input[type="range"]::-ms-fill-lower {
-    background: #ddd;
-    border-radius: 5px;
-  }
-  
-  form input[type="range"]::-ms-fill-upper {
-    background: #ddd;
-    border-radius: 5px;
-  }
-  
-  form input[type="range"]::-ms-thumb {
-    width: 20px;
-    height: 20px;
-    background: #61dafb;
-    border-radius: 50%;
-    cursor: pointer;
-  }
-  
-  .range-container {
-    position: relative;
-    width: 100%;
-  }
-  
-  .range-labels {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.9rem;
-    color: #666;
-    margin-top: 8px;
-  }
-  
-  .range-labels span {
-    position: absolute;
-  }
-  
-  .range-labels span:nth-child(1) {
-    left: 0;
-  }
-  
-  .range-labels span:nth-child(2) {
-    left: 20%;
-  }
-  
-  .range-labels span:nth-child(3) {
-    left: 50%;
-  }
-  
-  .range-labels span:nth-child(4) {
-    left: 70%;
-  }
-  
-  .range-labels span:nth-child(5) {
-    right: 0;
-  }
-  
-  .range-value {
-    text-align: center;
-    font-size: 1rem;
-    color: #333;
-    margin-top: 4px;
-  }
-  
-  /* New CSS for Experience Dropdown */
-  form select {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-  }
-  
+  font-family: Arial, sans-serif;
+  padding: 20px;
+}
+
+.form-header {
+  margin-bottom: 20px;
+}
+
+.form-row {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.form-group {
+  flex: 1;
+  margin-right: 20px;
+}
+
+.input-field,
+.select-field {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  box-sizing: border-box; /* Ensures padding and border are included in the element's total width and height */
+  font-size: 1rem; /* Ensures consistent font size */
+  border: 1px solid #ccc; /* Adds border for consistency */
+  border-radius: 4px; /* Adds rounded corners for consistency */
+}
+
+.submit-btn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 4px; /* Adds rounded corners */
+}
+
+.submit-btn:hover {
+  background-color: #0056b3;
+}
+
+.applications-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.applications-table th,
+.applications-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.applications-table th {
+  background-color: #f4f4f4;
+}
+
+.pagination {
+  display: flex;
+  justify-content: space-between;
+}
+
+.pagination button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 4px; /* Adds rounded corners */
+}
+
+.pagination button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* Slider Styles */
+.range-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.range-container input[type="range"] {
+  flex-grow: 1;
+}
+
+.range-container span {
+  font-size: 1rem;
+  width: 100px;
+  text-align: center;
+}
+
+/* Feedback Time and Listing Duration */
+.feedback-label,
+.listing-duration-label {
+  font-size: 1rem;
+  margin-bottom: 5px;
+  display: block;
+}
+
+/* Slider Wrapper and Scale */
+.slider-wrapper {
+  position: relative;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.slider-scale {
+  display: flex;
+  justify-content: space-between;
+  position: absolute;
+  top: 30px;
+  width: 100%;
+  font-size: 0.8rem;
+}
+
+.slider-scale span {
+  position: relative;
+}

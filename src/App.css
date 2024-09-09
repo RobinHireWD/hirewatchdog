@@ -84,7 +84,6 @@ main {
   transition: transform 0.3s ease; /* Smooth hover transition */
 }
 
-
 .Home:hover {
   transform: translateY(-5px); /* Subtle hover animation */
 }
@@ -118,8 +117,69 @@ main {
   transform: translateY(-2px); /* Slight lift on hover */
 }
 
-/* Styling for JobList */
-.JobList {
+/* Styling for Tracker */
+.Tracker {
+  text-align: left;
+  max-width: 800px;
+  width: 100%;
+  padding: 40px;
+  background-color: rgba(255, 255, 255, 0.96); /* Semi-transparent background */
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1); /* Soft shadow */
+  border-radius: 20px; /* Rounded corners */
+  margin-top: 30px; /* Spacing from top */
+  transition: transform 0.3s ease; /* Smooth hover transition */
+}
+
+.Tracker:hover {
+  transform: translateY(-5px); /* Subtle hover lift */
+}
+
+.Tracker h2 {
+  font-size: 2.4rem; /* Heading size */
+  color: #1e3a8a; /* Dark blue color for headings */
+  margin-bottom: 20px; /* Spacing below heading */
+  font-weight: bold; /* Bold heading text */
+}
+
+.Tracker p {
+  font-size: 1.3rem; /* Text size */
+  color: #555; /* Text color */
+  line-height: 1.8; /* Line spacing */
+}
+
+.Tracker .tracker-items {
+  list-style-type: none; /* Remove default list styling */
+  padding: 0; /* Remove padding */
+}
+
+.Tracker .tracker-item {
+  background-color: #f9f9f9; /* Light background for items */
+  border: 1px solid #ddd; /* Border color */
+  padding: 15px; /* Padding inside items */
+  margin-bottom: 15px; /* Spacing between items */
+  border-radius: 10px; /* Rounded corners */
+  transition: box-shadow 0.3s ease; /* Smooth shadow transition */
+}
+
+.Tracker .tracker-item:hover {
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15); /* Darker shadow on hover */
+}
+
+.Tracker .tracker-item h3 {
+  font-size: 1.6rem; /* Font size for sub-headings */
+  color: #333; /* Dark color for sub-headings */
+  margin-bottom: 10px; /* Spacing below sub-heading */
+}
+
+.Tracker .tracker-item p {
+  font-size: 1.2rem; /* Font size for paragraph text */
+  color: #555; /* Text color */
+  margin: 5px 0; /* Vertical spacing */
+}
+
+/* Styling for CompanyInsight */
+/* Styling for CompanyInsight */
+.CompanyInsight {
   text-align: left;
   max-width: 900px;
   width: 100%;
@@ -130,160 +190,86 @@ main {
   margin-top: 30px;
 }
 
-.JobList h2 {
+.CompanyInsight .company-insight-header {
   font-size: 2.4rem;
   color: #1e3a8a;
   margin-bottom: 20px;
 }
 
-.JobList ul {
+.CompanyInsight .company-card-list {
   list-style-type: none;
   padding: 0;
 }
 
-.JobList li {
+.CompanyInsight .company-card {
+  display: flex;
+  justify-content: space-between;
   background-color: #f9f9f9;
   border: 1px solid #ddd;
   padding: 20px;
   margin-bottom: 15px;
   border-radius: 15px;
   transition: box-shadow 0.3s ease;
-  cursor: pointer;
+  word-break: break-word; /* Ensures long words break and wrap onto the next line */
 }
 
-.JobList li:hover {
+.CompanyInsight .company-card:hover {
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
 }
 
-.JobList li p {
-  margin: 5px 0;
+.CompanyInsight .company-card-left {
+  flex: 1;
+}
+
+.CompanyInsight .company-card-right {
+  flex: 2;
+}
+
+.CompanyInsight .company-card h3 {
+  font-size: 1.8rem; /* Adjust size if necessary */
+  color: #333;
+  margin-bottom: 10px;
+  overflow-wrap: break-word; /* Ensures long words or company names wrap onto the next line */
+  hyphens: auto; /* Adds hyphens for better word breaking */
+}
+
+.CompanyInsight .rating-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #61dafb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: bold;
+}
+
+.CompanyInsight .hiring-info {
+  margin-bottom: 15px;
+}
+
+.CompanyInsight .info-item {
+  margin-bottom: 10px;
+}
+
+.CompanyInsight .info-item p {
+  margin: 0;
+}
+
+.CompanyInsight .info-item .green {
+  color: #4caf50;
+}
+
+.CompanyInsight .info-item .yellow {
+  color: #ffeb3b;
+}
+
+.CompanyInsight .application-info {
   font-size: 1.2rem;
   color: #555;
 }
 
-.JobList li h3 {
-  font-size: 1.6rem;
-  color: #333;
-  margin-bottom: 10px;
-}
-
-/* Styling for Tracker */
-.Tracker {
-  text-align: left;
-  max-width: 800px;
-  width: 100%;
-  padding: 40px;
-  background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent background */
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-  border-radius: 20px;
-  margin-top: 30px;
-}
-
-h2 {
-  font-size: 2.4rem;
-  margin-bottom: 1.5rem;
-  color: #1e3a8a;
-  font-weight: bold;
-}
-
-/* Search Box Styles */
-.search-box {
-  margin-bottom: 20px;
-}
-
-.search-box input {
-  width: 100%;
-  padding: 15px;
-  font-size: 1rem;
-  border: 1px solid #2cd8e1;
-  border-radius: 10px;
-  background-color: #f0f2f5;
-  transition: border-color 0.3s ease;
-}
-
-.search-box input:focus {
-  border-color: #61dafb;
-  outline: none;
-}
-
-.search-box button {
-  padding: 15px;
-  border: none;
-  background-color: #61dafb;
-  color: #fff;
-  font-size: 1.1rem;
-  cursor: pointer;
-  border-radius: 10px;
-  transition: background-color 0.3s ease;
-}
-
-.search-box button:hover {
-  background-color: #1e3a8a;
-}
-
-.search-box .suggestions {
-  margin-top: 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  background-color: #1cc1d7;
-  max-height: 200px;
-  overflow-y: auto;
-}
-
-.search-box .suggestions button {
-  width: 100%;
-  background: none;
-  border: none;
-  padding: 8px;
-  text-align: left;
-}
-
-.search-box .suggestions button:hover {
-  background-color: #f0f0f0;
-}
-
-/* General form styling */
-form {
-  display: flex;
-  flex-direction: column;
-}
-
-form label {
-  font-size: 1.1rem;
-  color: #333;
-  margin-bottom: 8px;
-}
-
-form input, form select {
-  padding: 15px;
-  font-size: 1rem;
-  border: 1px solid #cccccc;
-  border-radius: 10px;
-  margin-bottom: 20px;
-  box-sizing: border-box;
-  background-color: #f4f4f9;
-  transition: border-color 0.3s;
-}
-
-form input:focus, form select:focus {
-  border-color: #61dafb;
-  outline: none;
-}
-
-button {
-  padding: 15px 25px;
-  background-color: #61dafb;
-  border: none;
-  color: #fff;
-  font-size: 1.2rem;
-  cursor: pointer;
-  border-radius: 30px;
-  transition: background-color 0.3s ease;
-}
-
-button:hover {
-  background-color: #1e3a8a;
-}
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
@@ -296,7 +282,7 @@ button:hover {
     gap: 15px;
   }
 
-  .Tracker, .Home, .JobList {
+  .Home, .Tracker, .CompanyInsight {
     padding: 20px;
   }
 }

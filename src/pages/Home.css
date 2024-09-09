@@ -45,7 +45,7 @@ body {
   text-align: center; /* Center align text */
   position: absolute; /* Position the content box absolutely */
   top: 40%; /* Adjust as needed */
-  left: -40%; /* Move the content box to the far left */
+  left: -30%; /* Move the content box to the far left */
   margin-left: -10%; /* Use negative margin to push further left if needed */
   transition: transform 0.3s ease; /* Smooth transition for transform changes */
 }

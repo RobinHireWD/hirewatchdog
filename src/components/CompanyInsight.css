@@ -1,32 +1,68 @@
+/* Header styling */
+.header {
+  position: absolute; /* Position independently of the container */
+  top: 400px; /* Adjust vertical position to bring it lower */
+  left: 0; /* Align the header to the left side of the page */
+  font-size: 60px; /* Increase font size for visibility */
+  color: white; /* White text color */
+  background-color: rgba(74, 144, 226, 0); /* Transparent background */
+  padding: 10px; /* Padding for spacing */
+  border-radius: 5px; /* Optional: border radius for rounded edges */
+  z-index: 10; /* Ensure the header is above other elements */
+  width: auto; /* Adjust width as needed */
+  text-align: left; /* Align text to the left */
+}
+
+.header h1 {
+  margin: 0; /* Remove default margin */
+  line-height: 1.2; /* Adjust line height for spacing */
+}
+
+.header span {
+  display: block; /* Force "Company" and "Insights" to be on separate lines */
+}
+
+
+/* Container styling */
 .company-insight-container {
   padding: 20px;
   font-family: Arial, sans-serif;
+  background-color: white; /* Background color for the container */
+  width: 900px; /* Set a fixed width for the container */
+  height: 650px; /* Set a fixed height for the container */
+  position: absolute; /* Position it absolutely to align to the right side */
+  right: 40; /* Align the container to the right side of the page */
+  top: 120px; /* Adjust top position to ensure container does not overlap with the header */
+  overflow-y: auto; /* Enable vertical scrolling */
 }
 
+/* Title styling */
 h1 {
   color: #333;
   font-size: 28px;
-  text-align: center;
+  text-align: left; /* Align title to the left */
   margin-bottom: 20px;
 }
 
+/* Card list styling */
 .company-card-list {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: space-around;
+  flex-direction: column; /* Stack cards vertically */
+  gap: 20px; /* Space between cards */
 }
 
+/* Card styling */
 .company-card {
   background-color: #f8f8ff;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   display: flex;
   justify-content: space-between;
-  width: 600px;
-  margin: 20px;
-  padding: 20px;
+  width: 95%; /* Full width of the container */
+  padding: 15px; /* Padding for card content */
 }
 
+/* Left side of the card */
 .company-card-left {
   flex: 1;
   display: flex;
@@ -36,20 +72,23 @@ h1 {
   background-color: #4A90E2;
   color: #fff;
   border-radius: 10px;
-  padding: 20px;
+  padding: 15px; /* Padding for content */
   text-align: center;
 }
 
+/* Card header styling */
 .company-card-left h2 {
-  font-size: 24px;
+  font-size: 22px; /* Adjust font size */
   margin-bottom: 5px;
 }
 
+/* Card paragraph styling */
 .company-card-left p {
-  font-size: 16px;
+  font-size: 14px; /* Adjust font size */
   margin-bottom: 15px;
 }
 
+/* Rating circle styling */
 .rating-circle {
   display: flex;
   flex-direction: column;
@@ -57,36 +96,42 @@ h1 {
   align-items: center;
   background-color: white;
   border-radius: 50%;
-  width: 80px;
-  height: 80px;
+  width: 70px; /* Size of the circle */
+  height: 70px; /* Size of the circle */
 }
 
 .rating-circle p {
-  font-size: 24px;
+  font-size: 20px; /* Font size for rating */
   color: #333;
 }
 
 .rating-circle span {
-  font-size: 12px;
+  font-size: 10px; /* Font size for label */
   color: #666;
 }
 
+/* Right side of the card */
 .company-card-right {
   flex: 2;
-  padding: 20px;
+  padding: 15px; /* Padding for content */
 }
 
+/* Hiring info styling */
 .hiring-info {
   display: flex;
-  justify-content: space-between;
+  flex-wrap: wrap; /* Wrap items to fit within the card */
+  gap: 10px; /* Space between info items */
 }
 
+/* Info item styling */
 .info-item {
+  flex: 1 1 calc(50% - 10px); /* Half width minus gap */
   text-align: center;
 }
 
 .info-item p {
   margin: 5px 0;
+  font-size: 12px; /* Font size for info items */
 }
 
 .green {
@@ -101,8 +146,16 @@ h1 {
   color: red;
 }
 
+/* Application info styling */
 .application-info {
-  margin-top: 20px;
+  display: flex;
+  flex-wrap: wrap; /* Wrap items to fit within the card */
+  gap: 10px; /* Space between info items */
+  margin-top: 15px; /* Margin above the section */
+  font-size: 12px; /* Font size for application info */
+}
+
+.application-info p {
+  flex: 1 1 calc(50% - 10px); /* Half width minus gap */
   text-align: left;
-  font-size: 14px;
 }

@@ -2,7 +2,12 @@ import React, { useState, useEffect } from 'react';
 import algoliasearch from 'algoliasearch/lite';
 import { InstantSearch, connectHits } from 'react-instantsearch-dom';
 import CustomSearchBox from './CustomSearchBox';
-import { countries, applicationSources, degrees, applicationStatuses, listingDurations } from './constants';
+import {
+  countries,
+  applicationSources,
+  degrees,
+  applicationStatuses,
+} from './constants';
 import './Tracker.css';
 
 const searchClient = algoliasearch('21GLO4JOBR', '40ade772c34eddda66c63b5e75436e35');
@@ -11,7 +16,6 @@ const CustomHits = connectHits(({ hits, onNewCompany }) => (
   <CustomSearchBox hits={hits} onNewCompany={onNewCompany} isSuggestionsVisible={true} />
 ));
 
-// Utility function to capitalize the first letter of a string
 const capitalizeFirstLetter = (string) => {
   return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
 };
@@ -27,47 +31,46 @@ function Tracker() {
     applicationsource: '',
     salaryexpectation: '',
     applicationstatus: '',
-    listingduration: '',
+    listingduration: 1,
     experience: '',
-    newCompany: '' // Add this field for new company
   });
 
   const [isSuggestionsVisible, setSuggestionsVisible] = useState(true);
-  const [isAddingNewCompany, setAddingNewCompany] = useState(false); // Track if user wants to add a new company
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalApplications, setTotalApplications] = useState(0);
-  const limit = 5;
 
-  // Fetch applications from backend with pagination
   useEffect(() => {
-    fetch(`http://localhost:5001/applications?page=${currentPage}&limit=${limit}`)
+    fetch(`http://localhost:5001/applications?page=1&limit=5`)
       .then((res) => res.json())
       .then((data) => {
-        setApplications(data.applications);
-        setTotalApplications(data.total);
+        setApplications(data.applications); // Store fetched applications
       })
       .catch((error) => console.error('Error fetching applications:', error));
-  }, [currentPage]);
+  }, []);
 
   const handleChange = (e) => {
     setForm({
       ...form,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
   const handleSliderChange = (e) => {
     setForm({
       ...form,
-      feedbacktime: e.target.value
+      feedbacktime: e.target.value,
+    });
+  };
+
+  const handleListingDurationChange = (e) => {
+    setForm({
+      ...form,
+      listingduration: e.target.value,
     });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Use the new company name if adding a new one and capitalize it
-    const company = isAddingNewCompany ? capitalizeFirstLetter(form.newCompany) : capitalizeFirstLetter(form.company);
+    const company = capitalizeFirstLetter(form.company);
 
     fetch('http://localhost:5001/applications', {
       method: 'POST',
@@ -77,7 +80,7 @@ function Tracker() {
       .then((res) => res.json())
       .then((data) => {
         if (!data.error) {
-          setApplications([...applications, data]);
+          setApplications([...applications, data]); // Store new application data
           setForm({
             company: '',
             position: '',
@@ -87,12 +90,10 @@ function Tracker() {
             applicationsource: '',
             salaryexpectation: '',
             applicationstatus: '',
-            listingduration: '',
+            listingduration: 1,
             experience: '',
-            newCompany: '' // Reset new company field
           });
           setSuggestionsVisible(true);
-          setAddingNewCompany(false); // Reset new company addition flag
           alert('Application submitted successfully!');
         } else {
           alert('An error occurred while submitting the application.');
@@ -109,195 +110,193 @@ function Tracker() {
     setSuggestionsVisible(false);
   };
 
-  const handleNewCompanyChange = (e) => {
-    setForm({ ...form, newCompany: e.target.value });
-  };
-
   const getFeedbackLabel = (value) => {
     if (value <= 2) return 'Quick';
-    if (value <= 5) return 'Average';
+    if (value <= 5) return 'Moderate';
     if (value <= 7) return 'Slow';
-    return 'Extremely Slow';
+    return 'Very Slow';
   };
 
-  const handlePageChange = (newPage) => {
-    setCurrentPage(newPage);
+  const getListingDurationLabel = (value) => {
+    if (value <= 5) return 'Short';
+    if (value <= 10) return 'Medium';
+    if (value <= 15) return 'Long';
+    return 'Very Long';
   };
 
   return (
     <div className="Tracker">
-      <h2>Application Tracker</h2>
+      <h2>Tell Us About Your Experience</h2>
       <form onSubmit={handleSubmit}>
-        <label>Company Name:</label>
-        <InstantSearch indexName="companies" searchClient={searchClient}>
-          <CustomHits onNewCompany={handleCompanySelect} isSuggestionsVisible={isSuggestionsVisible} />
-        </InstantSearch>
-
-        {/* New Company Input Field */}
-        {isAddingNewCompany && (
-          <>
-            <label>New Company Name:</label>
-            <input
-              type="text"
-              name="newCompany"
-              value={form.newCompany}
-              onChange={handleNewCompanyChange}
-              required
-            />
-          </>
-        )}
-
-        <button type="button" onClick={() => setAddingNewCompany(!isAddingNewCompany)}>
-          {isAddingNewCompany ? 'Select Existing Company' : 'Add New Company'}
-        </button>
-
-        <label>Position Applied:</label>
-        <input
-          type="text"
-          name="position"
-          value={form.position}
-          onChange={handleChange}
-          required
-        />
-
-        <label>Country:</label>
-        <select name="country" value={form.country} onChange={handleChange} required>
-          <option value="">Select Country</option>
-          {countries.map((country) => (
-            <option key={country} value={country}>
-              {country}
-            </option>
-          ))}
-        </select>
-
-        <label>Experience in the Field (years):</label>
-        <select
-          name="experience"
-          value={form.experience}
-          onChange={handleChange}
-        >
-          <option value="">Select Experience</option>
-          <option value="0-2">0-2 years</option>
-          <option value="2-5">2-5 years</option>
-          <option value="5-10">5-10 years</option>
-          <option value="10-20">10-20 years</option>
-        </select>
-
-        <label>Feedback Time (in weeks):</label>
-        <div className="range-container">
-          <input
-            type="range"
-            min="0"
-            max="12"
-            value={form.feedbacktime}
-            onChange={handleSliderChange}
-          />
-          <span>{getFeedbackLabel(form.feedbacktime)}</span>
+        <div className="form-header">
+          <h3>Application Details</h3>
         </div>
 
-        <label>Degree:</label>
-        <select name="degree" value={form.degree} onChange={handleChange} required>
-          <option value="">Select Degree</option>
-          {degrees.map((degree) => (
-            <option key={degree} value={degree}>
-              {degree}
-            </option>
-          ))}
-        </select>
+        {/* Company and Position in one row */}
+        <div className="form-row">
+          <div className="form-group">
+            <label>Company Name:</label>
+            <InstantSearch indexName="companies" searchClient={searchClient}>
+              <CustomHits onNewCompany={handleCompanySelect} />
+            </InstantSearch>
+            <input
+              type="text"
+              name="company"
+              value={form.company}
+              onChange={handleChange}
+              className="input-field"
+              placeholder="Enter New Company Name"
+              required
+            />
+          </div>
 
-        <label>Application Source:</label>
-        <select
-          name="applicationsource"
-          value={form.applicationsource}
-          onChange={handleChange}
-          required
-        >
-          <option value="">Select Source</option>
-          {applicationSources.map((source) => (
-            <option key={source} value={source}>
-              {source}
-            </option>
-          ))}
-        </select>
+          <div className="form-group">
+            <label>Position:</label>
+            <input
+              type="text"
+              name="position"
+              value={form.position}
+              onChange={handleChange}
+              className="input-field"
+              placeholder="Position Applied For"
+              required
+            />
+          </div>
+        </div>
 
-        <label>Salary Expectation (in USD):</label>
-        <input
-          type="number"
-          name="salaryexpectation"
-          value={form.salaryexpectation}
-          onChange={handleChange}
-          required
-        />
+        {/* Country and Experience in one row */}
+        <div className="form-row">
+          <div className="form-group">
+            <label>Country:</label>
+            <select name="country" value={form.country} onChange={handleChange} required className="select-field">
+              <option value="">Select Country</option>
+              {countries.map((country) => (
+                <option key={country} value={country}>
+                  {country}
+                </option>
+              ))}
+            </select>
+          </div>
 
-        <label>Application Status:</label>
-        <select
-          name="applicationstatus"
-          value={form.applicationstatus}
-          onChange={handleChange}
-          required
-        >
-          <option value="">Select Status</option>
-          {applicationStatuses.map((status) => (
-            <option key={status} value={status}>
-              {status}
-            </option>
-          ))}
-        </select>
+          <div className="form-group">
+            <label>Experience in the Field (years):</label>
+            <select name="experience" value={form.experience} onChange={handleChange} className="select-field">
+              <option value="">Select Experience</option>
+              <option value="0-2">0-2 years</option>
+              <option value="2-5">2-5 years</option>
+              <option value="5-10">5-10 years</option>
+              <option value="10-20">10-20 years</option>
+            </select>
+          </div>
+        </div>
 
-        <label>Listing Duration (weeks):</label>
-        <input
-          type="number"
-          name="listingduration"
-          value={form.listingduration}
-          onChange={handleChange}
-        />
+        {/* Degree and Salary Expectation in one row */}
+        <div className="form-row">
+          <div className="form-group">
+            <label>Degree:</label>
+            <select name="degree" value={form.degree} onChange={handleChange} required className="select-field">
+              <option value="">Select Degree</option>
+              {degrees.map((degree) => (
+                <option key={degree} value={degree}>
+                  {degree}
+                </option>
+              ))}
+            </select>
+          </div>
 
-        <button type="submit">Submit Application</button>
+          <div className="form-group">
+            <label>Salary Expectation (in USD):</label>
+            <input
+              type="number"
+              name="salaryexpectation"
+              value={form.salaryexpectation}
+              onChange={handleChange}
+              className="input-field"
+              placeholder="Enter Salary Expectation"
+              required
+            />
+          </div>
+        </div>
+
+        {/* Application Source and Status in one row */}
+        <div className="form-row">
+          <div className="form-group">
+            <label>Application Source:</label>
+            <select
+              name="applicationsource"
+              value={form.applicationsource}
+              onChange={handleChange}
+              required
+              className="select-field"
+            >
+              <option value="">Select Source</option>
+              {applicationSources.map((source) => (
+                <option key={source} value={source}>
+                  {source}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label>Application Status:</label>
+            <select
+              name="applicationstatus"
+              value={form.applicationstatus}
+              onChange={handleChange}
+              required
+              className="select-field"
+            >
+              <option value="">Select Status</option>
+              {applicationStatuses.map((status) => (
+                <option key={status} value={status}>
+                  {status}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {/* Feedback Time */}
+        <div className="form-group">
+          <label>Feedback Time (in weeks):</label>
+          <span className="feedback-label">{getFeedbackLabel(form.feedbacktime)}</span>
+          <div className="slider-wrapper">
+            <div className="range-container">
+              <input
+                type="range"
+                min="0"
+                max="12"
+                value={form.feedbacktime}
+                onChange={handleSliderChange}
+              />
+              <span>{form.feedbacktime} weeks</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Listing Duration */}
+        <div className="form-group">
+          <label>Listing Duration (in weeks):</label>
+          <span className="listing-duration-label">{getListingDurationLabel(form.listingduration)}</span>
+          <div className="form-group">
+            <div className="slider-wrapper">
+              <div className="range-container">
+                <input
+                  type="range"
+                  min="1"
+                  max="15"
+                  value={form.listingduration}
+                  onChange={handleListingDurationChange}
+                />
+                <span>{form.listingduration} weeks</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" className="submit-btn">Submit Application</button>
       </form>
-
-      <h3>Tracked Applications</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>Company</th>
-            <th>Position</th>
-            <th>Country</th>
-            <th>Feedback Time</th>
-            <th>Degree</th>
-            <th>Application Source</th>
-            <th>Salary Expectation</th>
-            <th>Status</th>
-            <th>Listing Duration</th>
-            <th>Experience</th>
-          </tr>
-        </thead>
-        <tbody>
-          {applications.map((app) => (
-            <tr key={app.id}>
-              <td>{app.company}</td>
-              <td>{app.position}</td>
-              <td>{app.country}</td>
-              <td>{app.feedbacktime}</td>
-              <td>{app.degree}</td>
-              <td>{app.applicationsource}</td>
-              <td>{app.salaryexpectation}</td>
-              <td>{app.applicationstatus}</td>
-              <td>{app.listingduration}</td>
-              <td>{app.experience}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      <div className="pagination">
-        <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
-          Previous
-        </button>
-        <span>Page {currentPage}</span>
-        <button onClick={() => handlePageChange(currentPage + 1)} disabled={(currentPage * limit) >= totalApplications}>
-          Next
-        </button>
-      </div>
     </div>
   );
 }
