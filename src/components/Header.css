@@ -2,53 +2,63 @@
 
 /* General header styling */
 .Header {
-  background: rgb(255, 255, 255); /* White background */
-  color: black; /* Black text color */
+  background: linear-gradient(95deg, #4923B4 0%, #E878CF 100%); /* Match the background of the home */
+  color: white;
   padding: 1.5rem 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for separation */
+  position: relative;
+  z-index: 10; /* Ensure it stays on top of other elements */
+  box-shadow: none; /* Remove any shadow */
 }
 
 /* Logo styling */
 .logo-link {
   display: flex;
   align-items: center;
-  text-decoration: none; /* Remove underline from the link */
+  text-decoration: none;
 }
 
 .logo {
-  width: 80px; /* Adjust logo size */
-  height: auto; /* Maintain aspect ratio */
+  width: 200px;
+  height: auto;
 }
 
-/* Navigation styles */
-.Header nav ul {
+/* Center the navigation links */
+.nav-links {
   list-style-type: none;
-  padding: 0;
-  margin: 0;
   display: flex;
-  gap: 20px; /* Space between nav items */
+  gap: 50px; /* Space between nav items */
+  margin: 0;
+  padding: 0;
+  justify-content: center; /* Ensure items are centered */
+  align-items: center;
+  flex: 1; /* Allow the navigation to expand and center */
 }
 
-.Header nav ul li {
+.nav-links li {
   margin: 0;
 }
 
-.Header nav ul li a {
-  color: black; /* Black text color */
+.nav-links li a {
+  color: white;
   text-decoration: none;
   font-size: 1.2rem;
   padding: 12px 24px;
   border-radius: 25px;
-  background-color: #00d4ff; /* Light blue background */
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.Header nav ul li a:hover {
-  background-color: #f7f7f7; /* Light grey background on hover */
-  color: #1e3a8a; /* Dark blue text color on hover */
+.nav-links li a:hover {
+  background-color: #FF66E5; /* Light pink hover */
+  color: white;
+}
+
+/* Placeholder on the right to keep alignment */
+.placeholder {
+  width: 80px; /* Same width as the logo */
+  height: auto;
 }
 
 /* Responsive adjustments */
@@ -58,8 +68,12 @@
     text-align: center;
   }
 
-  .Header nav ul {
+  .nav-links {
     flex-direction: column;
     gap: 15px; /* Reduced gap for smaller screens */
+  }
+
+  .placeholder {
+    display: none; /* Hide placeholder on smaller screens */
   }
 }

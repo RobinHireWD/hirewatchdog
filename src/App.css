@@ -2,29 +2,35 @@
 html, body {
   height: 100%; /* Ensure html and body take up the full height of the viewport */
   margin: 0; /* Remove default margin */
+  width: 100%; /* Ensure the full width is used */
+  overflow-x: hidden; /* Prevent horizontal scrolling */
 }
 
 body {
-  background: linear-gradient(to right, #007AFF, #00d4ff); /* Blue gradient background for the entire screen */
-  font-family: 'Inter', sans-serif; /* Modern, clean font */
-  color: #333; /* Text color */
+  background: linear-gradient(95deg, #4923B4, #E878CF); /* Updated gradient to match the header */
+  font-family: 'Inter', sans-serif;
+  color: #333;
 }
 
 /* App styling */
 .App {
-  text-align: center;
-  font-family: 'Inter', sans-serif; /* Modern, clean font */
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Ensure app takes up the full viewport height */
+  width: 100%; /* Ensure full width of the viewport */
   margin: 0;
   padding: 0;
+  overflow-x: hidden; /* Prevent horizontal scrolling */
 }
 
-/* Main content styling */
 main {
   display: flex;
+  flex-grow: 1; /* Allow the main content to grow and fill the space */
   justify-content: center;
   align-items: center;
-  min-height: 80vh;
-  padding: 20px;
+  width: 100%; /* Full width */
+  padding: 0; /* Remove extra padding */
+  margin: 0; /* Remove extra margin */
   flex-direction: column;
 }
 
@@ -73,48 +79,93 @@ main {
 
 /* Styling for Home */
 .Home {
-  text-align: center; /* Center text alignment */
-  max-width: 900px; /* Maintain a slightly wider width */
-  width: 100%; /* Full width for responsiveness */
-  padding: 40px; /* Adequate padding for content spacing */
-  background-color: rgba(255, 255, 255, 0.0); /* Fully transparent background to blend with gradient */
-  box-shadow: none; /* Remove box shadow for seamless appearance */
-  border-radius: 0; /* Remove border-radius to maintain a clean edge */
-  margin-top: 30px; /* Margin for spacing from the top */
-  transition: transform 0.3s ease; /* Smooth hover transition */
-}
-
-.Home:hover {
-  transform: translateY(-5px); /* Subtle hover animation */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100vw; /* Full width of the viewport */
+  height: calc(100vh - 80px); /* Full height minus header (adjust height if header size changes) */
+  padding: 40px; /* Adequate padding for content */
+  background-color: transparent; /* Fully transparent to allow gradient from body to show */
+  box-shadow: none; /* Remove any shadow */
+  border-radius: 0; /* No border radius to ensure sharp edges */
+  margin-top: 0;
 }
 
 .Home h1 {
-  font-size: 2.5rem;
-  color: #1e3a8a;
+  font-size: 3rem;
+  color: #fff; /* Make the text stand out on the gradient */
   margin-bottom: 20px;
 }
 
 .Home p {
-  font-size: 1.3rem;
-  color: #555;
+  font-size: 1.5rem;
+  color: #fff; /* Light text color for better readability */
   line-height: 1.8;
 }
 
-.Home button {
-  margin-top: 20px;
-  padding: 15px 25px;
-  background: linear-gradient(45deg, #61dafb, #4b6cb7); /* Gradient button */
+/* Buttons styling */
+.buttons {
+  display: flex;
+  gap: 20px;
+}
+
+.learn-more-btn {
+  padding: 15px 30px;
+  background: #FF00C7; /* Set background to #FF00C7 */
+  color: #fff; /* White text color */
   border: none;
-  color: #fff;
+  border-radius: 30px;
   font-size: 1.2rem;
   cursor: pointer;
-  border-radius: 30px; /* Pill-shaped button */
   transition: background 0.3s ease, transform 0.2s;
 }
 
-.Home button:hover {
-  background: linear-gradient(45deg, #4b6cb7, #61dafb);
-  transform: translateY(-2px); /* Slight lift on hover */
+.learn-more-btn:hover {
+  background: #e600a6; /* Darker shade on hover */
+}
+
+.contact-us-btn {
+  padding: 15px 30px;
+  background: transparent; /* Transparent background */
+  color: #ffffff; /* Set text color to match the Learn More button */
+  border: 2px solid #ffffff; /* Border color matching the background color */
+  border-radius: 30px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: background 0.3s ease, color 0.3s;
+}
+
+.contact-us-btn:hover {
+  background: transparent; /* Transparent background */
+  color: #fff; /* Text color changes to white on hover */
+}
+
+/* Ensure full responsiveness */
+@media (max-width: 1024px) {
+  .Home {
+    padding: 20px; /* Reduce padding on smaller screens */
+  }
+
+  .Home h1 {
+    font-size: 2.5rem;
+  }
+
+  .Home p {
+    font-size: 1.3rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .Home {
+    padding: 20px;
+    text-align: center; /* Center text and buttons on smaller screens */
+  }
+
+  .buttons {
+    flex-direction: column; /* Stack buttons vertically */
+    gap: 15px;
+  }
 }
 
 /* Styling for Tracker */
@@ -177,7 +228,6 @@ main {
   margin: 5px 0; /* Vertical spacing */
 }
 
-/* Styling for CompanyInsight */
 /* Styling for CompanyInsight */
 .CompanyInsight {
   text-align: left;
@@ -270,7 +320,6 @@ main {
   color: #555;
 }
 
-
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .App-header {
@@ -284,5 +333,14 @@ main {
 
   .Home, .Tracker, .CompanyInsight {
     padding: 20px;
+  }
+
+  .Home {
+    text-align: center; /* Center text and buttons on smaller screens */
+  }
+
+  .buttons {
+    flex-direction: column; /* Stack buttons vertically */
+    gap: 15px;
   }
 }

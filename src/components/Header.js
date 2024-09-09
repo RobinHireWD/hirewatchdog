@@ -12,6 +12,7 @@ function Header() {
         <img src={logo} alt="HireWatchdog Logo" className="logo" />
       </Link>
       
+      {/* Centered Navigation Links */}
       <nav>
         <ul className="nav-links">
           <li>
@@ -21,10 +22,13 @@ function Header() {
             <Link to="/tracker">Application Tracker</Link>
           </li>
           <li>
-            <Link to="/company-insights">Company Insights</Link> {/* Added link */}
+            <Link to="/company-insights">Company Insights</Link>
           </li>
         </ul>
       </nav>
+
+      {/* Placeholder on the right to keep the layout balanced */}
+      <div className="placeholder" />
     </header>
   );
 }

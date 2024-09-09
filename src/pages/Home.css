@@ -1,86 +1,142 @@
-/* home.css */
-
-/* Import Google Font with bold weight */
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap');
-
-html, body {
-  height: 100%; /* Ensure the html and body take up the full height of the viewport */
-  margin: 0; /* Remove default margin */
-}
-
-body {
-  background: linear-gradient(to right, #007AFF, #00d4ff); /* Blue gradient background for the entire screen */
-  font-family: 'Nunito', sans-serif; /* Apply the Nunito font */
-}
-
+/* Home component styling */
 .Home {
-  position: relative; /* Establish a positioning context */
-  min-height: 100vh; /* Full-screen height */
+  position: relative;
+  width: 100vw; /* Full viewport width */
+  height: 100vh; /* Full viewport height */
+  overflow: hidden; /* Ensure no overflow beyond the viewport */
   display: flex;
-  align-items: center; /* Center vertically */
-  justify-content: center; /* Center horizontally */
-  padding: 0;
-  gap: 30px; /* Space between image and content box */
-  flex-wrap: wrap; /* Allow wrapping for smaller viewports */
+  justify-content: center;
+  align-items: center;
+  background: none; /* Background handled by the gradient div */
+  padding: 0 20px; /* Add padding for content */
+  box-sizing: border-box;
 }
 
+/* Background Gradient styling */
+.background-gradient {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0; /* Ensures background is behind the content */
+  background: linear-gradient(95deg, #4923B4, #E878CF); /* Gradient matching the app header */
+}
+
+/* Central content container */
+.central-content {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between; /* Ensure content and image are separated */
+  align-items: center;
+  max-width: 1200px;
+  padding: 40px;
+  z-index: 1; /* Ensure content is above the background gradient */
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Laptop image styling */
 .central-image {
-  max-width: 100%; /* Ensure the image doesn’t exceed its natural size */
+  max-width: 500px;
+  width: 100%; /* Ensure the image scales properly */
   height: auto;
-  display: block;
-  position: absolute; /* Position the image absolutely within the container */
-  top: 0; /* Align image to the top */
-  left: 0; /* Align image to the left */
-  transition: transform 0.3s ease; /* Smooth transition for transform changes */
+  margin-left: 40px; /* Space between the text content and image */
+  object-fit: contain;
 }
 
-.content-box {
-  background-color: rgba(255, 255, 255, 0); /* Fully transparent background */
-  padding: 30px 30px; /* Adjust padding for a smaller box */
-  border-radius: 15px; /* Rounded corners */
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0); /* No shadow for a flat look */
-  max-width: 400px; /* Reduce width of the content box */
-  width: 100%; /* Make it responsive */
-  color: white; /* Set default text color to white */
-  text-align: center; /* Center align text */
-  position: absolute; /* Position the content box absolutely */
-  top: 40%; /* Adjust as needed */
-  left: -30%; /* Move the content box to the far left */
-  margin-left: -10%; /* Use negative margin to push further left if needed */
-  transition: transform 0.3s ease; /* Smooth transition for transform changes */
+/* Text content styling */
+.text-content {
+  flex: 1; /* Make sure it takes up available space */
+  text-align: left; /* Left-align the text */
+  color: #fff; /* White text for readability */
+  max-width: 600px; /* Limit the width of the content box */
 }
 
-.content-box h1 {
-  color: white !important; /* Set heading color to white and override other styles */
-  font-size: 2.5em; /* Adjust heading size */
-  font-weight: 700; /* Bold weight for Nunito */
-  margin-bottom: 15px; /* Spacing between heading and text */
+.text-content h1 {
+  font-size: 3rem;
+  color: #fff;
+  margin-bottom: 20px;
 }
 
-.content-box p {
-  color: white !important; /* Set paragraph text color to white and override other styles */
-  font-size: 1.2em; /* Adjust text size */
-  line-height: 1.6;
+.text-content p {
+  font-size: 1.5rem;
+  color: #fff;
+  margin-bottom: 30px;
 }
 
-/* Bounce animation */
-@keyframes bounce {
-  0%, 20%, 50%, 80%, 100% {
-    transform: translateY(0);
+/* Buttons styling */
+.buttons {
+  display: flex;
+  gap: 20px;
+}
+
+.learn-more-btn,
+.contact-us-btn {
+  padding: 15px 30px;
+  border-radius: 30px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s;
+  border: none; /* Remove default border */
+}
+
+/* Learn More button styling */
+.learn-more-btn {
+  background: #FF00C7; /* Set background to #FF00C7 */
+  color: #fff; /* White text color */
+}
+
+.learn-more-btn:hover {
+  background: #e600a6; /* Darker shade on hover */
+}
+
+/* Contact Us button styling */
+.contact-us-btn {
+  background: transparent; /* Transparent background */
+  color: #FF00C7; /* Set text color to match the Learn More button */
+  border: 2px solid #FF00C7; /* Border color matching the background color */
+}
+
+.contact-us-btn:hover {
+  background: #FF00C7; /* Background color on hover */
+  color: #fff; /* Text color changes to white on hover */
+}
+
+/* Ensure full responsiveness */
+@media (max-width: 1024px) {
+  .central-content {
+    padding: 20px; /* Reduce padding on smaller screens */
   }
-  40% {
-    transform: translateY(-10px);
+
+  .text-content h1 {
+    font-size: 2.5rem;
   }
-  60% {
-    transform: translateY(-5px);
+
+  .text-content p {
+    font-size: 1.3rem;
   }
 }
 
-/* Apply bounce effect on hover */
-.central-image:hover {
-  animation: bounce 1s ease;
-}
+@media (max-width: 768px) {
+  .central-content {
+    flex-direction: column-reverse; /* Stack content on smaller screens */
+    text-align: center;
+  }
 
-.content-box:hover {
-  animation: bounce 1s ease;
+  .central-image {
+    margin-left: 0;
+    margin-bottom: 20px; /* Space below the image on small screens */
+    max-width: 100%; /* Ensure image scales to full width on smaller screens */
+  }
+
+  .text-content {
+    text-align: center; /* Center text on small screens */
+  }
+
+  .buttons {
+    flex-direction: column; /* Stack buttons vertically */
+    gap: 15px;
+  }
 }

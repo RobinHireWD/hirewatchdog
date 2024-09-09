@@ -27,9 +27,10 @@
 .company-insight-container {
   padding: 20px;
   font-family: Arial, sans-serif;
-  background-color: white; /* Background color for the container */
+  background-color: rgb(255, 255, 255); /* Background color for the container */
+  border-radius: 20px; /* Add border radius for rounded corners */
   width: 900px; /* Set a fixed width for the container */
-  height: 650px; /* Set a fixed height for the container */
+  height: 630px; /* Set a fixed height for the container */
   position: absolute; /* Position it absolutely to align to the right side */
   right: 40; /* Align the container to the right side of the page */
   top: 120px; /* Adjust top position to ensure container does not overlap with the header */
@@ -53,14 +54,16 @@ h1 {
 
 /* Card styling */
 .company-card {
-  background-color: #f8f8ff;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: #f8f8ff; /* Background color for the card */
+  border-radius: 10px; /* Rounded corners */
+  border: 1px solid #929daf; /* Border color and width */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Shadow effect */
   display: flex;
   justify-content: space-between;
   width: 95%; /* Full width of the container */
   padding: 15px; /* Padding for card content */
 }
+
 
 /* Left side of the card */
 .company-card-left {
