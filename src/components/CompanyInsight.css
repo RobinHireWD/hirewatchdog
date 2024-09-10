@@ -1,33 +1,15 @@
-/* Header styling */
-.header {
-  position: absolute; /* Position independently of the container */
-  top: 400px; /* Adjust vertical position to bring it lower */
-  left: 0; /* Align the header to the left side of the page */
-  font-size: 60px; /* Increase font size for visibility */
-  color: white; /* White text color */
-  background-color: rgba(74, 144, 226, 0); /* Transparent background */
-  padding: 10px; /* Padding for spacing */
-  border-radius: 5px; /* Optional: border radius for rounded edges */
-  z-index: 10; /* Ensure the header is above other elements */
-  width: auto; /* Adjust width as needed */
-  text-align: left; /* Align text to the left */
-}
-
-.header span {
-  display: block; /* Force "Company" and "Insights" to be on separate lines */
-}
-
 /* Outer wrapper styling for scrolling */
 .scroll-wrapper {
-  width: 900px; /* Match the width of the container */
-  height: 630px; /* Match the height of the container */
-  overflow-y: auto; /* Enable vertical scrolling */
+  width: 900px; /* Width of the container */
+  height: 630px; /* Height of the container */
+  overflow: hidden; /* Hide overflow outside the wrapper */
   padding: 20px; /* Add padding inside the wrapper */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: add shadow for better visual effect */
-  border-radius: 20px; /* Match the container's border-radius */
+  border-radius: 20px; /* Border radius for rounded corners */
   position: absolute; /* Position it absolutely to align to the right side */
   right: 40px; /* Align the wrapper to the right side of the page */
   top: 120px; /* Adjust top position to ensure wrapper does not overlap with the header */
+  box-sizing: border-box;
 }
 
 /* Container styling */
@@ -35,8 +17,8 @@
   font-family: Arial, sans-serif;
   background-color: rgb(255, 255, 255); /* Background color for the container */
   border-radius: 20px; /* Add border radius for rounded corners */
-  width: 900px; /* Full width of the wrapper */
-  height: 650px; /* Full height of the wrapper */
+  width: 100%; /* Full width of the wrapper */
+  height: 100%; /* Full height of the wrapper */
   box-sizing: border-box; /* Include padding and border in element's total width and height */
   overflow: hidden; /* Hide overflow to ensure it doesn’t affect the wrapper size */
 }
@@ -53,14 +35,18 @@
 .search-options {
   display: flex;
   align-items: center;
-  margin-right: 10px; /* Space to separate search from the container edge */
+}
+
+.search-options label {
+  margin-right: 10px; /* Space between label and input */
+  font-size: 14px;
 }
 
 .search-options input {
-  padding: 5px;
+  padding: 0;
   font-size: 14px;
-  width: 250px; /* Fixed width for search box */
-  box-sizing: border-box; /* Ensure padding and border are included in the width */
+  width: 250px; /* Fixed width */
+  box-sizing: border-box;
 }
 
 /* Sort options styling */
@@ -78,7 +64,6 @@
   padding: 5px;
   font-size: 14px;
 }
-
 
 /* Title styling */
 h1 {
@@ -213,4 +198,29 @@ h1 {
   color: red;
   text-align: center;
   margin-top: 20px;
+}
+
+/* No results image styling */
+.no-results {
+  text-align: center;
+  padding: 20px;
+}
+
+.no-results-image {
+  max-width: 100%;
+  height: auto;
+  max-height: 400px; /* Adjust based on your design needs */
+}
+
+/* No results styling */
+.no-results {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%; /* Full height of the container */
+}
+
+.no-results-image {
+  max-width: 100%; /* Ensure image fits within container */
+  max-height: 100%; /* Ensure image fits within container */
 }

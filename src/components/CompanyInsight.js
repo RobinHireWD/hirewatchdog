@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import './CompanyInsight.css'; // Import your CSS file for styling
+import noResultsImage from '../assets/no company found.png'; // Adjust the path if necessary
 
 const CompanyInsight = () => {
   const [companyInsights, setCompanyInsights] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [sortOrder, setSortOrder] = useState('high-to-low'); // Default sort order
-  const [searchQuery, setSearchQuery] = useState(''); // Default search query
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortOrder, setSortOrder] = useState('high-to-low');
 
   // Fetch company insights from the server
   useEffect(() => {
@@ -26,95 +27,107 @@ const CompanyInsight = () => {
     fetchCompanyInsights();
   }, []);
 
-  // Handle sort option change
-  const handleSortChange = (event) => {
-    setSortOrder(event.target.value);
-  };
-
   // Handle search input change
-  const handleSearchChange = (event) => {
-    setSearchQuery(event.target.value.toLowerCase());
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value.toLowerCase());
   };
 
-  // Filter and sort companyInsights based on search query and sortOrder
-  const filteredAndSortedInsights = [...companyInsights]
-    .filter(company => company.name.toLowerCase().includes(searchQuery))
+  // Handle sort order change
+  const handleSortChange = (e) => {
+    setSortOrder(e.target.value);
+  };
+
+  // Filter and sort company insights
+  const filteredAndSortedInsights = companyInsights
+    .filter((company) =>
+      company.name.toLowerCase().includes(searchQuery)
+    )
     .sort((a, b) => {
       if (sortOrder === 'high-to-low') {
-        return (b.rating || 0) - (a.rating || 0);
-      } else if (sortOrder === 'low-to-high') {
-        return (a.rating || 0) - (b.rating || 0);
+        return b.rating - a.rating;
+      } else {
+        return a.rating - b.rating;
       }
-      return 0;
     });
 
   // Render loading, error, and insights
-  if (loading) return <div className="loading">Loading...</div>; // Consider adding a spinner here
+  if (loading) return <div className="loading">Loading...</div>;
   if (error) return <div className="error">{error}</div>;
 
   return (
-    <div>
-      <div className="header">
-        <span>Company</span>
-        <span>Insights</span>
-      </div>
+    <div className="scroll-wrapper">
       <div className="company-insight-container">
         <div className="search-sort-container">
+          <div className="search-options">
+            <label htmlFor="search">Search:</label>
+            <input
+              type="text"
+              id="search"
+              value={searchQuery}
+              onChange={handleSearchChange}
+              placeholder="Search for a company..."
+            />
+          </div>
           <div className="sort-options">
-            <label htmlFor="sort-by">Sort by Rating:</label>
-            <select id="sort-by" value={sortOrder} onChange={handleSortChange}>
+            <label htmlFor="sort">Sort by Rating:</label>
+            <select
+              id="sort"
+              value={sortOrder}
+              onChange={handleSortChange}
+            >
               <option value="high-to-low">High to Low</option>
               <option value="low-to-high">Low to High</option>
             </select>
           </div>
-          <div className="search-options">
-            <label htmlFor="search">Search:</label>
-            <input
-              id="search"
-              type="text"
-              placeholder="Enter company name"
-              value={searchQuery}
-              onChange={handleSearchChange}
-            />
-          </div>
         </div>
+
         <div className="company-card-list">
-          {filteredAndSortedInsights.map((company) => (
-            <div key={company.id} className="company-card">
-              <div className="company-card-left">
-                <h2>{company.name || 'N/A'}</h2>
-                <p>{company.country || 'Unknown Country'}</p>
-                <div className="rating-circle">
-                  <p>{company.rating !== null && company.rating !== undefined ? company.rating.toFixed(1) : 'N/A'}</p>
-                  <span>Overall Rating</span>
-                </div>
-              </div>
-              <div className="company-card-right">
-                <div className="hiring-info">
-                  <div className="info-item">
-                    <p>Average Job Online Time (Weeks)</p>
-                    <p className="green">{company.avglistingduration !== null && company.avglistingduration !== undefined ? company.avglistingduration.toFixed(1) : 'N/A'}</p>
-                  </div>
-                  <div className="info-item">
-                    <p>Average Feedback Time (Weeks)</p>
-                    <p className="yellow">{company.avgfeedbacktime !== null && company.avgfeedbacktime !== undefined ? company.avgfeedbacktime.toFixed(1) : 'N/A'}</p>
-                  </div>
-                  <div className="info-item">
-                    <p>Number of Feedbacks</p>
-                    <p className="blue">{company.num_feedback !== null && company.num_feedback !== undefined ? company.num_feedback : 'N/A'}</p>
-                  </div>
-                  <div className="info-item">
-                    <p>Ghost Job Probability</p>
-                    <p className="red">{company.ghostjobprobability !== null && company.ghostjobprobability !== undefined ? (company.ghostjobprobability * 100).toFixed(1) : 'N/A'}%</p>
-                  </div>
-                </div>
-                <div className="application-info">
-                  <p>Number of Applications: {company.numapplicants || 'N/A'}</p>
-                  <p>Number of Rejections: {company.numrejection || 'N/A'}</p>
-                </div>
-              </div>
+          {filteredAndSortedInsights.length === 0 ? (
+            <div className="no-results">
+              <img
+                src={noResultsImage} // Use the imported image
+                alt="No companies found"
+                className="no-results-image"
+              />
             </div>
-          ))}
+          ) : (
+            filteredAndSortedInsights.map((company) => (
+              <div key={company.id} className="company-card">
+                <div className="company-card-left">
+                  <h2>{company.name || 'N/A'}</h2>
+                  <p>{company.country || 'Unknown Country'}</p>
+                  <div className="rating-circle">
+                    <p>{company.rating !== null && company.rating !== undefined ? company.rating.toFixed(1) : 'N/A'}</p>
+                    <span>Overall Rating</span>
+                  </div>
+                </div>
+                <div className="company-card-right">
+                  <div className="hiring-info">
+                    <div className="info-item">
+                      <p>Average Job Online Time (Weeks)</p>
+                      <p className="green">{company.avglistingduration !== null && company.avglistingduration !== undefined ? company.avglistingduration.toFixed(1) : 'N/A'}</p>
+                    </div>
+                    <div className="info-item">
+                      <p>Average Feedback Time (Weeks)</p>
+                      <p className="yellow">{company.avgfeedbacktime !== null && company.avgfeedbacktime !== undefined ? company.avgfeedbacktime.toFixed(1) : 'N/A'}</p>
+                    </div>
+                    <div className="info-item">
+                      <p>Number of Feedbacks</p>
+                      <p className="blue">{company.num_feedback !== null && company.num_feedback !== undefined ? company.num_feedback : 'N/A'}</p>
+                    </div>
+                    <div className="info-item">
+                      <p>Ghost Job Probability</p>
+                      <p className="red">{company.ghostjobprobability !== null && company.ghostjobprobability !== undefined ? (company.ghostjobprobability * 100).toFixed(1) : 'N/A'}%</p>
+                    </div>
+                  </div>
+                  <div className="application-info">
+                    <p>Number of Applications: {company.numapplicants || 'N/A'}</p>
+                    <p>Number of Rejections: {company.numrejection || 'N/A'}</p>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </div>
     </div>
