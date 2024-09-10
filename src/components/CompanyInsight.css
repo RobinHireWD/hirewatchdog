@@ -13,29 +13,72 @@
   text-align: left; /* Align text to the left */
 }
 
-.header h1 {
-  margin: 0; /* Remove default margin */
-  line-height: 1.2; /* Adjust line height for spacing */
-}
-
 .header span {
   display: block; /* Force "Company" and "Insights" to be on separate lines */
 }
 
+/* Outer wrapper styling for scrolling */
+.scroll-wrapper {
+  width: 900px; /* Match the width of the container */
+  height: 630px; /* Match the height of the container */
+  overflow-y: auto; /* Enable vertical scrolling */
+  padding: 20px; /* Add padding inside the wrapper */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: add shadow for better visual effect */
+  border-radius: 20px; /* Match the container's border-radius */
+  position: absolute; /* Position it absolutely to align to the right side */
+  right: 40px; /* Align the wrapper to the right side of the page */
+  top: 120px; /* Adjust top position to ensure wrapper does not overlap with the header */
+}
 
 /* Container styling */
 .company-insight-container {
-  padding: 20px;
   font-family: Arial, sans-serif;
   background-color: rgb(255, 255, 255); /* Background color for the container */
   border-radius: 20px; /* Add border radius for rounded corners */
-  width: 900px; /* Set a fixed width for the container */
-  height: 630px; /* Set a fixed height for the container */
-  position: absolute; /* Position it absolutely to align to the right side */
-  right: 40; /* Align the container to the right side of the page */
-  top: 120px; /* Adjust top position to ensure container does not overlap with the header */
-  overflow-y: auto; /* Enable vertical scrolling */
+  width: 900px; /* Full width of the wrapper */
+  height: 650px; /* Full height of the wrapper */
+  box-sizing: border-box; /* Include padding and border in element's total width and height */
+  overflow: hidden; /* Hide overflow to ensure it doesn’t affect the wrapper size */
 }
+
+/* Search and sort container styling */
+.search-sort-container {
+  display: flex;
+  justify-content: space-between; /* Space between search and sort options */
+  align-items: center;
+  margin-bottom: 20px; /* Space below the search and sort options */
+}
+
+/* Search options styling */
+.search-options {
+  display: flex;
+  align-items: center;
+  margin-right: 10px; /* Space to separate search from the container edge */
+}
+
+.search-options input {
+  padding: 5px;
+  font-size: 14px;
+  width: 250px; /* Fixed width for search box */
+  box-sizing: border-box; /* Ensure padding and border are included in the width */
+}
+
+/* Sort options styling */
+.sort-options {
+  display: flex;
+  align-items: center;
+}
+
+.sort-options label {
+  margin-right: 10px; /* Space between label and select */
+  font-size: 14px;
+}
+
+.sort-options select {
+  padding: 5px;
+  font-size: 14px;
+}
+
 
 /* Title styling */
 h1 {
@@ -50,6 +93,8 @@ h1 {
   display: flex;
   flex-direction: column; /* Stack cards vertically */
   gap: 20px; /* Space between cards */
+  height: calc(100% - 80px); /* Subtract height of search-sort-container to ensure scroll works */
+  overflow-y: auto; /* Enable vertical scrolling within card list */
 }
 
 /* Card styling */
@@ -63,7 +108,6 @@ h1 {
   width: 95%; /* Full width of the container */
   padding: 15px; /* Padding for card content */
 }
-
 
 /* Left side of the card */
 .company-card-left {
@@ -161,4 +205,12 @@ h1 {
 .application-info p {
   flex: 1 1 calc(50% - 10px); /* Half width minus gap */
   text-align: left;
+}
+
+/* Loading and error messages */
+.loading, .error {
+  font-size: 18px;
+  color: red;
+  text-align: center;
+  margin-top: 20px;
 }

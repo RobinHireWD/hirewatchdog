@@ -95,12 +95,12 @@
 /* Contact Us button styling */
 .contact-us-btn {
   background: transparent; /* Transparent background */
-  color: #FF00C7; /* Set text color to match the Learn More button */
-  border: 2px solid #FF00C7; /* Border color matching the background color */
+  color: #ffffff; /* Set text color to match the Learn More button */
+  border: 2px solid #ffffff; /* Border color matching the background color */
 }
 
 .contact-us-btn:hover {
-  background: #FF00C7; /* Background color on hover */
+  background: transparent; /* Transparent background */
   color: #fff; /* Text color changes to white on hover */
 }
 

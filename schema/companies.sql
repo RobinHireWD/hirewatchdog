@@ -1,25 +1,29 @@
--- Create Companies table
+-- Create Companies table with additional columns
 CREATE TABLE IF NOT EXISTS "Companies" (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL UNIQUE,
-    rating FLOAT,
-    isghostjob BOOLEAN DEFAULT FALSE,
-    num_feedback INTEGER DEFAULT 0,
-    jobposts INTEGER DEFAULT 0,
-    numapplicants INTEGER DEFAULT 0,
-    avgfeedbacktime FLOAT DEFAULT 0, -- Average feedback time in weeks
-    ghostjobprobability FLOAT DEFAULT 0,
-    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    id SERIAL PRIMARY KEY,                -- Unique identifier for each company
+    name VARCHAR(255) NOT NULL UNIQUE,    -- Company name
+    rating FLOAT,                         -- Rating on a scale from 1 to 5
+    isghostjob BOOLEAN DEFAULT FALSE,     -- Whether the company is identified as a "ghost job"
+    num_feedback INTEGER DEFAULT 0,       -- Number of feedback received (applications)
+    jobposts INTEGER DEFAULT 0,           -- Number of distinct job posts
+    numapplicants INTEGER DEFAULT 0,      -- Number of applicants
+    avgfeedbacktime FLOAT DEFAULT 0,      -- Average feedback time in weeks
+    ghostjobprobability FLOAT DEFAULT 0,  -- Probability of the job being a ghost job
+    avglistingduration FLOAT DEFAULT 0,   -- Average listing duration in days
+    numrejection INTEGER DEFAULT 0,      -- Number of rejections
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Create function to update company metrics
-CREATE OR REPLACE FUNCTION update_company_metrics() RETURNS TRIGGER AS $$
+-- Function to update company metrics
+CREATE OR REPLACE FUNCTION update_company_metrics(company_id INTEGER) RETURNS VOID AS $$
 DECLARE
     avg_feedback_time FLOAT;
     num_applicants INTEGER;
     ghost_job_probability FLOAT;
     is_ghost_job BOOLEAN;
+    avg_listing_duration FLOAT;
+    num_rejections INTEGER;
     long_listing_threshold INTEGER := 60; -- Threshold for long listing duration (60 days)
     feedback_ratio_threshold FLOAT := 0.10; -- Minimum 10% feedback-applicant ratio
 BEGIN
@@ -27,37 +31,66 @@ BEGIN
     WITH metrics AS (
         SELECT 
             COUNT(*) AS total_applications,
-            SUM(feedbacktime) AS total_feedback_time,
-            SUM(CASE WHEN feedbacktime > (SELECT avg(feedbacktime) FROM applications WHERE company_id = NEW.company_id) THEN 1 ELSE 0 END) AS long_feedback_time_count,
-            SUM(CASE WHEN listingduration > long_listing_threshold THEN 1 ELSE 0 END) AS long_listing_count,
-            SUM(CASE WHEN feedbacktime > 0 THEN 1 ELSE 0 END) AS feedback_count
-        FROM applications
-        WHERE company_id = NEW.company_id
+            COALESCE(SUM(feedbacktime), 0) AS total_feedback_time,
+            COALESCE(SUM(CASE WHEN feedbacktime > (SELECT AVG(feedbacktime) FROM "Applications" WHERE company_id = company_id) THEN 1 ELSE 0 END), 0) AS long_feedback_time_count,
+            COALESCE(SUM(CASE WHEN listingduration > long_listing_threshold THEN 1 ELSE 0 END), 0) AS long_listing_count,
+            COALESCE(SUM(CASE WHEN feedbacktime > 0 THEN 1 ELSE 0 END), 0) AS feedback_count,
+            COALESCE(AVG(listingduration), 0) AS avg_listing_duration,
+            COALESCE(SUM(CASE WHEN applicationstatus = 'Rejected' THEN 1 ELSE 0 END), 0) AS num_rejections
+        FROM "Applications"
+        WHERE company_id = company_id
     )
     SELECT
-        total_feedback_time / total_applications / 7 AS avg_feedback_time, -- Convert to weeks
+        COALESCE(total_feedback_time / NULLIF(total_applications, 0) / 7, 0) AS avg_feedback_time, -- Convert to weeks, avoid division by zero
         total_applications AS num_applicants,
-        (long_feedback_time_count::FLOAT / total_applications) * 100 AS ghost_job_probability,
-        ((feedback_count::FLOAT / total_applications) < feedback_ratio_threshold OR long_listing_count > 0 OR ghost_job_probability > 50) AS is_ghost_job -- Adjust criteria for ghost job
-    INTO avg_feedback_time, num_applicants, ghost_job_probability, is_ghost_job
+        COALESCE((long_feedback_time_count::FLOAT / NULLIF(total_applications, 0)) * 100, 0) AS ghost_job_probability,
+        (COALESCE((feedback_count::FLOAT / NULLIF(total_applications, 0)), 0) < feedback_ratio_threshold OR long_listing_count > 0 OR ghost_job_probability > 50) AS is_ghost_job,
+        avg_listing_duration,
+        num_rejections
+    INTO avg_feedback_time, num_applicants, ghost_job_probability, is_ghost_job, avg_listing_duration, num_rejections
     FROM metrics;
 
     -- Update the Companies table with the calculated metrics
-    UPDATE companies
+    UPDATE "Companies"
     SET 
         avgfeedbacktime = avg_feedback_time,
         numapplicants = num_applicants,
         ghostjobprobability = ghost_job_probability,
         isghostjob = is_ghost_job,
-        updatedAt = CURRENT_TIMESTAMP
-    WHERE id = NEW.company_id;
-
-    RETURN NEW;
+        avglistingduration = avg_listing_duration,
+        numrejections = num_rejections,
+        updated_at = CURRENT_TIMESTAMP
+    WHERE id = company_id;
 END;
 $$ LANGUAGE plpgsql;
 
--- Create trigger for applications table
-CREATE TRIGGER applications_after_insert
-AFTER INSERT ON applications
-FOR EACH ROW
-EXECUTE FUNCTION update_company_metrics();
+-- Function to process the update queue
+CREATE OR REPLACE FUNCTION process_update_queue() RETURNS VOID AS $$
+DECLARE
+    record RECORD;
+BEGIN
+    FOR record IN
+        SELECT * FROM "CompanyUpdateQueue"
+    LOOP
+        -- Update company metrics
+        PERFORM update_company_metrics(record.company_id);
+        
+        -- Remove the processed record from the queue
+        DELETE FROM "CompanyUpdateQueue" WHERE id = record.id;
+    END LOOP;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Create a job to process the update queue periodically (e.g., every minute)
+-- This is optional; if you prefer real-time updates via the Python script, you can skip this.
+CREATE OR REPLACE FUNCTION schedule_update_queue() RETURNS VOID AS $$
+BEGIN
+    PERFORM pg_sleep(60); -- Wait for 60 seconds
+    PERFORM process_update_queue();
+END;
+$$ LANGUAGE plpgsql;
+
+-- Schedule the periodic function (if desired, using pg_cron or another scheduler)
+-- Note: Make sure pg_cron is installed and configured in your PostgreSQL instance.
+-- CREATE EXTENSION IF NOT EXISTS pg_cron;
+-- SELECT cron.schedule('*/1 * * * *', 'SELECT schedule_update_queue();');

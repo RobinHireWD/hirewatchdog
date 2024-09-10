@@ -11,20 +11,40 @@ const app = express();
 app.use(cors());
 app.use(express.json()); // Parses incoming JSON requests
 
+// Set up logging
+const logger = winston.createLogger({
+  level: 'info',
+  format: winston.format.combine(
+    winston.format.timestamp(),
+    winston.format.json()
+  ),
+  transports: [
+    new winston.transports.Console(),
+    new winston.transports.File({ filename: 'combined.log' })
+  ]
+});
+
 // Construct the database URL from individual environment variables
-const { DB_USER, DB_PASSWORD, DB_HOST, DB_NAME } = process.env;
+const { DB_USER, DB_PASSWORD, DB_HOST, DB_NAME, PORT } = process.env;
+
+if (!DB_USER || !DB_PASSWORD || !DB_HOST || !DB_NAME) {
+  logger.error('Missing required environment variables');
+  process.exit(1);
+}
+
 const DATABASE_URL = `postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:5432/${DB_NAME}`;
 
 // Log environment variables for debugging
-console.log('Environment Variables Loaded:');
-console.log(`DATABASE_URL: ${DATABASE_URL}`);
+logger.info('Environment Variables Loaded');
+logger.info(`DATABASE_URL: ${DATABASE_URL}`);
 
 // Set up PostgreSQL connection using Sequelize
 const sequelize = new Sequelize(DATABASE_URL, {
   dialect: 'postgres',
   dialectOptions: {
     ssl: false
-  }
+  },
+  logging: msg => logger.debug(msg)
 });
 
 // Define Application model
@@ -54,7 +74,7 @@ const Application = sequelize.define('Application', {
     type: DataTypes.STRING,
     allowNull: false
   },
-  feedbacktime: {  // Keep feedbacktime here for Application
+  feedbacktime: {
     type: DataTypes.INTEGER,
     allowNull: false
   },
@@ -108,7 +128,7 @@ const Company = sequelize.define('Company', {
     type: DataTypes.BOOLEAN,
     defaultValue: false
   },
-  num_feedback: {  // Changed feedbacktime to num_feedback
+  num_feedback: {
     type: DataTypes.INTEGER,
     allowNull: true,
     defaultValue: 0
@@ -139,14 +159,24 @@ const Company = sequelize.define('Company', {
 Company.hasMany(Application, { foreignKey: 'company_id' });
 Application.belongsTo(Company, { foreignKey: 'company_id' });
 
-// Create the tables if they don't exist
-sequelize.sync({ alter: true })
-  .then(() => console.log('Database synchronized'))
-  .catch(error => console.error('Error synchronizing the database:', error));
+// Sync models and start server
+const syncAndStartServer = async () => {
+  try {
+    await sequelize.sync({ alter: true });
+    logger.info('Database synchronized');
+
+    app.listen(PORT, () => {
+      logger.info(`Server running on http://localhost:${PORT}`);
+    });
+  } catch (error) {
+    logger.error('Error synchronizing the database:', error);
+    process.exit(1);
+  }
+};
 
 // Error handling helper function
 const handleError = (res, error, message) => {
-  console.error(message, error);
+  logger.error(`${message}: ${error.message}`, { error });
   res.status(500).json({ error: `${message}: ${error.message}` });
 };
 
@@ -160,7 +190,7 @@ const findOrCreateCompany = async (companyName) => {
 
 // Routes for Applications
 app.post('/applications', async (req, res) => {
-  console.log('Received request to create application');
+  logger.info('Received request to create application');
   try {
     const {
       company,
@@ -190,6 +220,7 @@ app.post('/applications', async (req, res) => {
 
     // Find or create the company
     const companyRecord = await findOrCreateCompany(company);
+    logger.info(`Company '${company}' found`, { companyId: companyRecord.id });
 
     // Create a new application entry
     const newApplication = await Application.create({
@@ -205,12 +236,14 @@ app.post('/applications', async (req, res) => {
       listingduration,
       experience
     });
+    logger.info('Application created', { applicationId: newApplication.id });
 
     // Update the company with the new number of applicants
     await Company.update(
       { numapplicants: sequelize.literal('numapplicants + 1') },
       { where: { id: companyRecord.id } }
     );
+    logger.info('Company numapplicants updated', { companyId: companyRecord.id });
 
     res.status(201).json(newApplication);
   } catch (error) {
@@ -219,7 +252,7 @@ app.post('/applications', async (req, res) => {
 });
 
 app.get('/applications', async (req, res) => {
-  console.log('Fetching applications');
+  logger.info('Fetching applications', { query: req.query });
   try {
     const limit = parseInt(req.query.limit, 10) || 5;
     const page = parseInt(req.query.page, 10) || 1;
@@ -238,7 +271,7 @@ app.get('/applications', async (req, res) => {
 
 // Routes for Company Insights
 app.get('/api/company-insights', async (req, res) => {
-  console.log('Fetching company insights');
+  logger.info('Fetching company insights');
   try {
     const companies = await Company.findAll({
       include: {
@@ -247,6 +280,7 @@ app.get('/api/company-insights', async (req, res) => {
       }
     });
     res.json(companies);
+    logger.info('Company insights fetched', { companyCount: companies.length });
   } catch (error) {
     handleError(res, error, 'Failed to fetch company insights');
   }
@@ -254,17 +288,33 @@ app.get('/api/company-insights', async (req, res) => {
 
 // Route to update company rating (num_feedback and other fields updated here)
 app.post('/update-company-rating', async (req, res) => {
-  console.log('Updating company rating');
+  logger.info('Updating company rating');
   try {
     const { name, rating, num_feedback, jobposts } = req.body;
 
+    // Validate input
+    if (rating === undefined || num_feedback === undefined || jobposts === undefined) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    // Find the company by name
     const company = await Company.findOne({ where: { name } });
     if (!company) {
       return res.status(404).json({ error: 'Company not found' });
     }
 
-    const isghostjob = num_feedback < 5 || jobposts < 5; // Example criteria for ghost job
+    // Determine if it's a ghost job based on criteria
+    const isghostjob = num_feedback < 5 || jobposts < 5;
 
+    // Log the values to ensure they are correct
+    logger.info('Values received for update:', { 
+      rating, 
+      num_feedback, 
+      jobposts, 
+      isghostjob 
+    });
+
+    // Update company attributes
     company.rating = rating;
     company.isghostjob = isghostjob;
     company.num_feedback = num_feedback;
@@ -277,21 +327,5 @@ app.post('/update-company-rating', async (req, res) => {
   }
 });
 
-// Global error handling
-process.on('uncaughtException', (error) => {
-  console.error('Uncaught Exception:', error);
-  // Optionally exit the process
-  process.exit(1);
-});
-
-process.on('unhandledRejection', (reason, promise) => {
-  console.error('Unhandled Rejection:', reason);
-  // Optionally exit the process
-  process.exit(1);
-});
-
-// Start the server
-const PORT = process.env.PORT || 5001;
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
+// Start server
+syncAndStartServer();

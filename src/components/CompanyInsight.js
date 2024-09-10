@@ -5,6 +5,8 @@ const CompanyInsight = () => {
   const [companyInsights, setCompanyInsights] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [sortOrder, setSortOrder] = useState('high-to-low'); // Default sort order
+  const [searchQuery, setSearchQuery] = useState(''); // Default search query
 
   // Fetch company insights from the server
   useEffect(() => {
@@ -24,6 +26,28 @@ const CompanyInsight = () => {
     fetchCompanyInsights();
   }, []);
 
+  // Handle sort option change
+  const handleSortChange = (event) => {
+    setSortOrder(event.target.value);
+  };
+
+  // Handle search input change
+  const handleSearchChange = (event) => {
+    setSearchQuery(event.target.value.toLowerCase());
+  };
+
+  // Filter and sort companyInsights based on search query and sortOrder
+  const filteredAndSortedInsights = [...companyInsights]
+    .filter(company => company.name.toLowerCase().includes(searchQuery))
+    .sort((a, b) => {
+      if (sortOrder === 'high-to-low') {
+        return (b.rating || 0) - (a.rating || 0);
+      } else if (sortOrder === 'low-to-high') {
+        return (a.rating || 0) - (b.rating || 0);
+      }
+      return 0;
+    });
+
   // Render loading, error, and insights
   if (loading) return <div className="loading">Loading...</div>; // Consider adding a spinner here
   if (error) return <div className="error">{error}</div>;
@@ -35,8 +59,27 @@ const CompanyInsight = () => {
         <span>Insights</span>
       </div>
       <div className="company-insight-container">
+        <div className="search-sort-container">
+          <div className="sort-options">
+            <label htmlFor="sort-by">Sort by Rating:</label>
+            <select id="sort-by" value={sortOrder} onChange={handleSortChange}>
+              <option value="high-to-low">High to Low</option>
+              <option value="low-to-high">Low to High</option>
+            </select>
+          </div>
+          <div className="search-options">
+            <label htmlFor="search">Search:</label>
+            <input
+              id="search"
+              type="text"
+              placeholder="Enter company name"
+              value={searchQuery}
+              onChange={handleSearchChange}
+            />
+          </div>
+        </div>
         <div className="company-card-list">
-          {companyInsights.map((company) => (
+          {filteredAndSortedInsights.map((company) => (
             <div key={company.id} className="company-card">
               <div className="company-card-left">
                 <h2>{company.name || 'N/A'}</h2>
@@ -50,7 +93,7 @@ const CompanyInsight = () => {
                 <div className="hiring-info">
                   <div className="info-item">
                     <p>Average Job Online Time (Weeks)</p>
-                    <p className="green">{company.avgOnlineTime !== null && company.avgOnlineTime !== undefined ? company.avgOnlineTime.toFixed(1) : 'N/A'}</p>
+                    <p className="green">{company.avglistingduration !== null && company.avglistingduration !== undefined ? company.avglistingduration.toFixed(1) : 'N/A'}</p>
                   </div>
                   <div className="info-item">
                     <p>Average Feedback Time (Weeks)</p>
@@ -67,7 +110,7 @@ const CompanyInsight = () => {
                 </div>
                 <div className="application-info">
                   <p>Number of Applications: {company.numapplicants || 'N/A'}</p>
-                  <p>Number of Rejections: {company.numrejections || 'N/A'}</p>
+                  <p>Number of Rejections: {company.numrejection || 'N/A'}</p>
                 </div>
               </div>
             </div>
