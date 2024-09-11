@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './CompanyInsight.css'; // Import your CSS file for styling
+import { CircularProgressbar } from 'react-circular-progressbar';
+import 'react-circular-progressbar/dist/styles.css';
 import noResultsImage from '../assets/no company found.png'; // Adjust the path if necessary
 
 const CompanyInsight = () => {
@@ -8,8 +10,8 @@ const CompanyInsight = () => {
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortOrder, setSortOrder] = useState('high-to-low');
+  const [hoveredCompany, setHoveredCompany] = useState(null);
 
-  // Fetch company insights from the server
   useEffect(() => {
     const fetchCompanyInsights = async () => {
       try {
@@ -27,30 +29,57 @@ const CompanyInsight = () => {
     fetchCompanyInsights();
   }, []);
 
-  // Handle search input change
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value.toLowerCase());
   };
 
-  // Handle sort order change
   const handleSortChange = (e) => {
     setSortOrder(e.target.value);
   };
 
-  // Filter and sort company insights
-  const filteredAndSortedInsights = companyInsights
-    .filter((company) =>
-      company.name.toLowerCase().includes(searchQuery)
-    )
-    .sort((a, b) => {
-      if (sortOrder === 'high-to-low') {
-        return b.rating - a.rating;
-      } else {
-        return a.rating - b.rating;
-      }
-    });
+  const getRatingColor = (rating) => {
+    if (rating <= 1) return '#ff0000'; // Red
+    if (rating <= 2) return '#ffa500'; // Orange
+    if (rating <= 3) return '#ffff00'; // Yellow
+    if (rating <= 4) return '#00ff00'; // Lime
+    return '#008000'; // Green
+  };
 
-  // Render loading, error, and insights
+  const scaleRatingToPercentage = (rating) => (rating / 5) * 100;
+
+  const getGhostJobColor = (probability) => {
+    if (probability <= 0.2) return '#008000'; // Green for 0% - 20%
+    if (probability <= 0.4) return '#00ff00'; // Lime for 21% - 40%
+    if (probability <= 0.6) return '#ffff00'; // Yellow for 41% - 60%
+    if (probability <= 0.8) return '#ffa500'; // Orange for 61% - 80%
+    return '#ff0000'; // Red for 81% - 100%
+  };
+
+  const scaleProbabilityToPercentage = (probability) => probability * 100;
+
+  const getFeedbackTimeColor = (feedbackTime) => {
+    if (feedbackTime <= 2) return '#00ff00'; // Green
+    if (feedbackTime <= 4) return '#00ff00'; // Lime
+    if (feedbackTime <= 6) return '#ffff00'; // Yellow
+    if (feedbackTime <= 9) return '#ffa500'; // Orange
+    return '#ff0000'; // Red
+  };
+
+  const scaleFeedbackTimeToPercentage = (feedbackTime) => Math.min((feedbackTime / 12) * 100, 100);
+
+  const getJobOnlineTimeColor = (onlineTime) => {
+    if (onlineTime <= 2) return '#00ff00'; // Green
+    if (onlineTime <= 4) return '#ffff00'; // Yellow
+    if (onlineTime <= 6) return '#ffa500'; // Orange
+    return '#ff0000'; // Red
+  };
+
+  const scaleJobOnlineTimeToPercentage = (onlineTime) => Math.min((onlineTime / 12) * 100, 100);
+
+  const filteredAndSortedInsights = companyInsights
+    .filter((company) => company.name.toLowerCase().includes(searchQuery))
+    .sort((a, b) => (sortOrder === 'high-to-low' ? b.rating - a.rating : a.rating - b.rating));
+
   if (loading) return <div className="loading">Loading...</div>;
   if (error) return <div className="error">{error}</div>;
 
@@ -70,11 +99,7 @@ const CompanyInsight = () => {
           </div>
           <div className="sort-options">
             <label htmlFor="sort">Sort by Rating:</label>
-            <select
-              id="sort"
-              value={sortOrder}
-              onChange={handleSortChange}
-            >
+            <select id="sort" value={sortOrder} onChange={handleSortChange}>
               <option value="high-to-low">High to Low</option>
               <option value="low-to-high">Low to High</option>
             </select>
@@ -85,31 +110,87 @@ const CompanyInsight = () => {
           {filteredAndSortedInsights.length === 0 ? (
             <div className="no-results">
               <img
-                src={noResultsImage} // Use the imported image
+                src={noResultsImage}
                 alt="No companies found"
                 className="no-results-image"
               />
             </div>
           ) : (
             filteredAndSortedInsights.map((company) => (
-              <div key={company.id} className="company-card">
+              <div
+                key={company.id}
+                className="company-card"
+                onMouseEnter={() => setHoveredCompany(company.id)}
+                onMouseLeave={() => setHoveredCompany(null)}
+              >
                 <div className="company-card-left">
                   <h2>{company.name || 'N/A'}</h2>
                   <p>{company.country || 'Unknown Country'}</p>
                   <div className="rating-circle">
-                    <p>{company.rating !== null && company.rating !== undefined ? company.rating.toFixed(1) : 'N/A'}</p>
-                    <span>Overall Rating</span>
+                    <CircularProgressbar
+                      value={scaleRatingToPercentage(company.rating)}
+                      text={`${company.rating !== null && company.rating !== undefined ? company.rating.toFixed(1) : 'N/A'}`}
+                      strokeWidth={10}
+                      styles={{
+                        path: {
+                          stroke: getRatingColor(company.rating),
+                        },
+                        text: {
+                          fill: '#ffffff',
+                          fontSize: '20px',
+                        },
+                        trail: {
+                          stroke: '#ddd',
+                        },
+                      }}
+                    />
                   </div>
                 </div>
                 <div className="company-card-right">
                   <div className="hiring-info">
                     <div className="info-item">
                       <p>Average Job Online Time (Weeks)</p>
-                      <p className="green">{company.avglistingduration !== null && company.avglistingduration !== undefined ? company.avglistingduration.toFixed(1) : 'N/A'}</p>
+                      <div className="job-online-circle">
+                        <CircularProgressbar
+                          value={scaleJobOnlineTimeToPercentage(company.avglistingduration)}
+                          text={`${company.avglistingduration !== null && company.avglistingduration !== undefined ? company.avglistingduration.toFixed(1) : 'N/A'}`}
+                          strokeWidth={8}
+                          styles={{
+                            path: {
+                              stroke: getJobOnlineTimeColor(company.avglistingduration),
+                            },
+                            text: {
+                              fill: '#000000',
+                              fontSize: '20px',
+                            },
+                            trail: {
+                              stroke: '#ddd',
+                            },
+                          }}
+                        />
+                      </div>
                     </div>
-                    <div className="info-item">
-                      <p>Average Feedback Time (Weeks)</p>
-                      <p className="yellow">{company.avgfeedbacktime !== null && company.avgfeedbacktime !== undefined ? company.avgfeedbacktime.toFixed(1) : 'N/A'}</p>
+                    <div className="info-item feedback-time-info">
+                      <p className="feedback-time-text">Average Feedback Time (Weeks)</p>
+                      <div className="feedback-time-circle">
+                        <CircularProgressbar
+                          value={scaleFeedbackTimeToPercentage(company.avgfeedbacktime)}
+                          text={`${company.avgfeedbacktime !== null && company.avgfeedbacktime !== undefined ? company.avgfeedbacktime.toFixed(1) : 'N/A'}`}
+                          strokeWidth={8}
+                          styles={{
+                            path: {
+                              stroke: getFeedbackTimeColor(company.avgfeedbacktime),
+                            },
+                            text: {
+                              fill: '#000000',
+                              fontSize: '20px',
+                            },
+                            trail: {
+                              stroke: '#ddd',
+                            },
+                          }}
+                        />
+                      </div>
                     </div>
                     <div className="info-item">
                       <p>Number of Feedbacks</p>
@@ -117,12 +198,26 @@ const CompanyInsight = () => {
                     </div>
                     <div className="info-item">
                       <p>Ghost Job Probability</p>
-                      <p className="red">{company.ghostjobprobability !== null && company.ghostjobprobability !== undefined ? (company.ghostjobprobability * 100).toFixed(1) : 'N/A'}%</p>
+                      <div className="ghost-job-circle">
+                        <CircularProgressbar
+                          value={scaleProbabilityToPercentage(company.ghostjobprobability)}
+                          text={`${(company.ghostjobprobability * 100).toFixed(0)}%`}
+                          strokeWidth={8}
+                          styles={{
+                            path: {
+                              stroke: getGhostJobColor(company.ghostjobprobability),
+                            },
+                            text: {
+                              fill: '#000000',
+                              fontSize: '20px',
+                            },
+                            trail: {
+                              stroke: '#ddd',
+                            },
+                          }}
+                        />
+                      </div>
                     </div>
-                  </div>
-                  <div className="application-info">
-                    <p>Number of Applications: {company.numapplicants || 'N/A'}</p>
-                    <p>Number of Rejections: {company.numrejection || 'N/A'}</p>
                   </div>
                 </div>
               </div>

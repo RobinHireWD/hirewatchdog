@@ -1,18 +1,19 @@
-/* Outer wrapper styling for scrolling */
+/* Scroll wrapper styling */
 .scroll-wrapper {
   width: 900px; /* Width of the container */
-  height: 630px; /* Height of the container */
-  overflow: hidden; /* Hide overflow outside the wrapper */
+  height: 680px; /* Height of the container */
+  overflow: visible; /* Allow overflow to be visible */
   padding: 20px; /* Add padding inside the wrapper */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: add shadow for better visual effect */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0); /* Optional: add shadow for better visual effect */
   border-radius: 20px; /* Border radius for rounded corners */
   position: absolute; /* Position it absolutely to align to the right side */
   right: 40px; /* Align the wrapper to the right side of the page */
   top: 120px; /* Adjust top position to ensure wrapper does not overlap with the header */
   box-sizing: border-box;
+  background-color: transparent;
 }
 
-/* Container styling */
+/* Container for the component */
 .company-insight-container {
   font-family: Arial, sans-serif;
   background-color: rgb(255, 255, 255); /* Background color for the container */
@@ -21,20 +22,24 @@
   height: 100%; /* Full height of the wrapper */
   box-sizing: border-box; /* Include padding and border in element's total width and height */
   overflow: hidden; /* Hide overflow to ensure it doesn’t affect the wrapper size */
+  padding: 20px;
 }
 
-/* Search and sort container styling */
+/* Container for search and sort options */
 .search-sort-container {
   display: flex;
   justify-content: space-between; /* Space between search and sort options */
   align-items: center;
   margin-bottom: 20px; /* Space below the search and sort options */
+  padding: 0 20px; /* Add space between container edge and search/sort options */
 }
 
 /* Search options styling */
 .search-options {
   display: flex;
   align-items: center;
+  margin-right: auto; /* Push search options to the left */
+  margin-top: 10px; /* Add top margin to bring search options down */
 }
 
 .search-options label {
@@ -43,7 +48,7 @@
 }
 
 .search-options input {
-  padding: 0;
+  padding: 5px;
   font-size: 14px;
   width: 250px; /* Fixed width */
   box-sizing: border-box;
@@ -53,6 +58,8 @@
 .sort-options {
   display: flex;
   align-items: center;
+  margin-left: auto; /* Push sort options to the right */
+  margin-top: 10px; /* Add top margin to bring sort options down */
 }
 
 .sort-options label {
@@ -73,7 +80,7 @@ h1 {
   margin-bottom: 20px;
 }
 
-/* Card list styling */
+/* List of company cards */
 .company-card-list {
   display: flex;
   flex-direction: column; /* Stack cards vertically */
@@ -82,16 +89,19 @@ h1 {
   overflow-y: auto; /* Enable vertical scrolling within card list */
 }
 
-/* Card styling */
+/* Styling for each company card */
 .company-card {
-  background-color: #f8f8ff; /* Background color for the card */
-  border-radius: 10px; /* Rounded corners */
-  border: 1px solid #929daf; /* Border color and width */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Shadow effect */
   display: flex;
-  justify-content: space-between;
-  width: 95%; /* Full width of the container */
-  padding: 15px; /* Padding for card content */
+  justify-content: space-between; /* Space between left and right side of card */
+  align-items: center;
+  padding: 10px;
+  width: 94%; /* Full width of the container */
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+  position: relative; /* Position relative for tooltip */
+  margin-left: 5px; /* Space between card and container edge */
 }
 
 /* Left side of the card */
@@ -101,7 +111,7 @@ h1 {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-color: #4A90E2;
+  background-color: #0408f9b9;
   color: #fff;
   border-radius: 10px;
   padding: 15px; /* Padding for content */
@@ -120,27 +130,66 @@ h1 {
   margin-bottom: 15px;
 }
 
-/* Rating circle styling */
+/* Circular Progress Bar styling */
 .rating-circle {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-color: white;
-  border-radius: 50%;
-  width: 70px; /* Size of the circle */
-  height: 70px; /* Size of the circle */
+  width: 80px; /* Adjust size as needed */
+  height: 80px;
+  position: relative;
 }
 
-.rating-circle p {
-  font-size: 20px; /* Font size for rating */
-  color: #333;
+.rating-circle .react-circular-progressbar {
+  width: 70%; /* Full width of the container */
+  height: 70%; /* Full height of the container */
+}
+
+.rating-circle .react-circular-progressbar path {
+  stroke: #4db6ac; /* Default stroke color for the path */
+}
+
+.rating-circle .react-circular-progressbar text {
+  font-size: 24px !important; /* Font size for the rating text */
+  fill: #ffffff !important; /* Set text color to white */
 }
 
 .rating-circle span {
-  font-size: 10px; /* Font size for label */
-  color: #666;
+  font-size: 12px;
+  color: #ffffff;
 }
+
+.ghost-job-circle, .feedback-time-circle, .job-online-circle {
+  width: 40px; /* Size of the circle */
+  height: 40px; /* Size of the circle */
+  margin: 0 auto; /* Center the circle */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10px; /* Space between text and circle */
+}
+
+/* Styling for the job online circle */
+.job-online-circle .react-circular-progressbar {
+  width: 100%; /* Full width of the container */
+  height: 100%; /* Full height of the container */
+}
+
+.job-online-circle .react-circular-progressbar path {
+  stroke: #1e90ff; /* Color for job online circle */
+}
+
+.job-online-circle .react-circular-progressbar text {
+  font-size: 20px !important; /* Font size for the job online percentage text */
+  fill: #000000 !important; /* Set text color to black */
+}
+
+.job-online-info {
+  margin-top: 20px; /* Space between text and circle */
+  text-align: center; /* Center the text and circle */
+}
+
 
 /* Right side of the card */
 .company-card-right {
@@ -193,7 +242,8 @@ h1 {
 }
 
 /* Loading and error messages */
-.loading, .error {
+.loading,
+.error {
   font-size: 18px;
   color: red;
   text-align: center;
@@ -221,6 +271,31 @@ h1 {
 }
 
 .no-results-image {
-  max-width: 100%; /* Ensure image fits within container */
-  max-height: 100%; /* Ensure image fits within container */
+  max-width: 70%; /* Ensure image fits within container */
+  max-height: 70%; /* Ensure image fits within container */
+}
+
+/* Tooltip styling */
+.tooltip {
+  position: absolute;
+  background-color: #ffffff;
+  color: #000000;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 10px;
+  z-index: 1000; /* Ensure tooltip is above other elements */
+}
+
+.tooltip-content {
+  display: none; /* Hide by default */
+}
+
+.company-card:hover .tooltip-content {
+  display: block; /* Show on hover */
+}
+
+.company-card-left .tooltip-content {
+  left: -220px; /* Adjust based on your needs */
+  top: 50%;
+  transform: translateY(-50%); /* Center vertically */
 }
