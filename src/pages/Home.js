@@ -13,7 +13,7 @@ function Home() {
         <img src={laptopImage} alt="Laptop" className="central-image" />
         <div className="text-content">
           <h1>Welcome to HireWatchdog</h1>
-          <p>Your go-to place for Job Application Insights.</p>
+          <p>Making Job Hunting Less Scary by Exposing Ghost Jobs.</p>
           <div className="buttons">
             <button className="learn-more-btn">Learn More</button>
             <button className="contact-us-btn">Contact Us</button>

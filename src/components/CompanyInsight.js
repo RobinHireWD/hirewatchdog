@@ -76,6 +76,15 @@ const CompanyInsight = () => {
 
   const scaleJobOnlineTimeToPercentage = (onlineTime) => Math.min((onlineTime / 12) * 100, 100);
 
+  const getRejectionColor = (ratio) => {
+    const percentage = ratio * 100;
+    if (percentage <= 20) return '#00ff00'; // Green for 0% - 20%
+    if (percentage <= 40) return '#00ff00'; // Lime for 21% - 40%
+    if (percentage <= 60) return '#ffff00'; // Yellow for 41% - 60%
+    if (percentage <= 80) return '#ffa500'; // Orange for 61% - 80%
+    return '#ff0000'; // Red for 81% - 100%
+  };
+
   const filteredAndSortedInsights = companyInsights
     .filter((company) => company.name.toLowerCase().includes(searchQuery))
     .sort((a, b) => (sortOrder === 'high-to-low' ? b.rating - a.rating : a.rating - b.rating));
@@ -193,8 +202,26 @@ const CompanyInsight = () => {
                       </div>
                     </div>
                     <div className="info-item">
-                      <p>Number of Feedbacks</p>
-                      <p className="blue">{company.num_feedback !== null && company.num_feedback !== undefined ? company.num_feedback : 'N/A'}</p>
+                      <p>Rejection to Application %</p>
+                      <div className="rejection-circle">
+                        <CircularProgressbar
+                          value={scaleProbabilityToPercentage(company.rejection_to_application_ratio)}
+                          text={`${(company.rejection_to_application_ratio * 100).toFixed(0)}%`}
+                          strokeWidth={8}
+                          styles={{
+                            path: {
+                              stroke: getRejectionColor(company.rejection_to_application_ratio),
+                            },
+                            text: {
+                              fill: '#000000',
+                              fontSize: '20px',
+                            },
+                            trail: {
+                              stroke: '#ddd',
+                            },
+                          }}
+                        />
+                      </div>
                     </div>
                     <div className="info-item">
                       <p>Ghost Job Probability</p>

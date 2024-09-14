@@ -19,8 +19,8 @@ const CustomSearchBox = connectSearchBox(({ currentRefinement, refine, hits = []
   };
 
   const handleCompanyClick = (company) => {
-    setInputValue(company);
-    refine(company);
+    setInputValue(''); // Clear input value
+    refine(''); // Clear search refinement
     onNewCompany(company); // Notify parent component
   };
 
@@ -30,23 +30,54 @@ const CustomSearchBox = connectSearchBox(({ currentRefinement, refine, hits = []
     onNewCompany(''); // Notify parent component of clearing
   };
 
+  const suggestionsStyle = {
+    position: 'absolute',
+    top: '100%',
+    left: '0',
+    width: '400px', // Increase width as needed
+    maxHeight: '100px', // Limit height if necessary
+    overflowY: 'auto', // Enable scrolling if the content overflows
+    backgroundColor: 'white',
+    border: '1px solid #ddd',
+    borderRadius: '4px',
+    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
+    zIndex: '100' // Ensure it appears above other content
+  };
+
+  const suggestionButtonStyle = {
+    width: '100%',
+    padding: '10px',
+    border: 'none',
+    background: 'none',
+    textAlign: 'left',
+    cursor: 'pointer'
+  };
+
+  const inputStyle = {
+    width: '300px', // Set width for the input box
+    padding: '10px',
+    border: '1px solid #ddd',
+    borderRadius: '4px'
+  };
+
   return (
-    <div className="search-box">
+    <div className="search-box" style={{ position: 'relative' }}>
       <input
         type="text"
         value={inputValue}
         onChange={handleInputChange}
-        placeholder="Search For Company..."
+        placeholder="Search For Existing Company..."
         autoFocus
+        style={inputStyle} // Apply inline styles here
       />
 
       {isSuggestionsVisible && inputValue && hits.length > 0 && (
-        <div className="suggestions">
+        <div className="suggestions" style={suggestionsStyle}>
           {hits.map((hit) => (
             <div key={hit.objectID}>
               <button
                 onClick={() => handleCompanyClick(hit.name)}
-                style={{ display: 'block', margin: '5px 0', cursor: 'pointer' }}
+                style={suggestionButtonStyle}
               >
                 {hit.name}
               </button>
@@ -55,8 +86,6 @@ const CustomSearchBox = connectSearchBox(({ currentRefinement, refine, hits = []
         </div>
       )}
 
-      {/* Removed the section for adding a new company */}
-      
       <button onClick={handleClearSearch} style={{ marginTop: '10px' }}>Clear Search</button>
     </div>
   );

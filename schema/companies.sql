@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS "Companies" (
     numrejection INTEGER DEFAULT 0,      -- Number of rejections
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    country VARCHAR(255) NOT NULL,        -- Country where the job is located
 );
 
 -- Function to update company metrics

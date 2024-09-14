@@ -111,7 +111,7 @@ h1 {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-color: #0408f9b9;
+  background-color: #140585b8;
   color: #fff;
   border-radius: 10px;
   padding: 15px; /* Padding for content */
@@ -160,7 +160,7 @@ h1 {
   color: #ffffff;
 }
 
-.ghost-job-circle, .feedback-time-circle, .job-online-circle {
+.ghost-job-circle, .feedback-time-circle, .job-online-circle, .rejection-circle {
   width: 40px; /* Size of the circle */
   height: 40px; /* Size of the circle */
   margin: 0 auto; /* Center the circle */
@@ -170,26 +170,32 @@ h1 {
   margin-top: 10px; /* Space between text and circle */
 }
 
-/* Styling for the job online circle */
-.job-online-circle .react-circular-progressbar {
+.ghost-job-circle .react-circular-progressbar,
+.feedback-time-circle .react-circular-progressbar,
+.job-online-circle .react-circular-progressbar,
+.rejection-circle .react-circular-progressbar {
   width: 100%; /* Full width of the container */
   height: 100%; /* Full height of the container */
 }
 
-.job-online-circle .react-circular-progressbar path {
-  stroke: #1e90ff; /* Color for job online circle */
+.ghost-job-circle .react-circular-progressbar path,
+.feedback-time-circle .react-circular-progressbar path,
+.job-online-circle .react-circular-progressbar path,
+.rejection-circle .react-circular-progressbar path {
+  stroke: #4db6ac; /* Default stroke color */
 }
 
-.job-online-circle .react-circular-progressbar text {
-  font-size: 20px !important; /* Font size for the job online percentage text */
+.ghost-job-circle .react-circular-progressbar text,
+.feedback-time-circle .react-circular-progressbar text,
+.job-online-circle .react-circular-progressbar text,
+.rejection-circle .react-circular-progressbar text {
+  font-size: 20px !important; /* Font size for percentage text */
   fill: #000000 !important; /* Set text color to black */
 }
 
-.job-online-info {
-  margin-top: 20px; /* Space between text and circle */
-  text-align: center; /* Center the text and circle */
+.rejection-circle .react-circular-progressbar path {
+  stroke: #ff0000; /* Color for rejection circle */
 }
-
 
 /* Right side of the card */
 .company-card-right {

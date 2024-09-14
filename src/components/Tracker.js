@@ -16,6 +16,13 @@ const CustomHits = connectHits(({ hits, onNewCompany }) => (
   <CustomSearchBox hits={hits} onNewCompany={onNewCompany} isSuggestionsVisible={true} />
 ));
 
+const capitalizeEachWord = (string) => {
+  return string
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
+};
+
 const capitalizeFirstLetter = (string) => {
   return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
 };
@@ -47,10 +54,17 @@ function Tracker() {
   }, []);
 
   const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+    const formattedValue = name === 'company' || name === 'position'
+      ? capitalizeEachWord(value)
+      : name === 'salaryexpectation'
+      ? Math.max(0, value)
+      : value;
+
+    setForm((prevForm) => ({
+      ...prevForm,
+      [name]: formattedValue,
+    }));
   };
 
   const handleSliderChange = (e) => {
@@ -70,7 +84,7 @@ function Tracker() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const company = capitalizeFirstLetter(form.company);
+    const company = capitalizeEachWord(form.company);
 
     fetch('http://localhost:5001/applications', {
       method: 'POST',
@@ -106,8 +120,13 @@ function Tracker() {
   };
 
   const handleCompanySelect = (company) => {
-    setForm({ ...form, company: capitalizeFirstLetter(company) });
-    setSuggestionsVisible(false);
+    setForm({ ...form, company: capitalizeEachWord(company) });
+    setSuggestionsVisible(false); // Hide suggestions when a company is selected
+  };
+
+  const handleCountrySelect = (e) => {
+    setForm({ ...form, country: e.target.value });
+    setSuggestionsVisible(false); // Hide suggestions when a country is selected
   };
 
   const getFeedbackLabel = (value) => {
@@ -137,7 +156,7 @@ function Tracker() {
           <div className="form-group">
             <label>Company Name:</label>
             <InstantSearch indexName="companies" searchClient={searchClient}>
-              <CustomHits onNewCompany={handleCompanySelect} />
+              <CustomHits onNewCompany={handleCompanySelect} isSuggestionsVisible={isSuggestionsVisible} />
             </InstantSearch>
             <input
               type="text"
@@ -145,7 +164,7 @@ function Tracker() {
               value={form.company}
               onChange={handleChange}
               className="input-field"
-              placeholder="Enter New Company Name"
+              placeholder="Or Enter New Company Name"
               required
             />
           </div>
@@ -168,7 +187,7 @@ function Tracker() {
         <div className="form-row">
           <div className="form-group">
             <label>Country:</label>
-            <select name="country" value={form.country} onChange={handleChange} required className="select-field">
+            <select name="country" value={form.country} onChange={handleCountrySelect} required className="select-field">
               <option value="">Select Country</option>
               {countries.map((country) => (
                 <option key={country} value={country}>
@@ -214,6 +233,7 @@ function Tracker() {
               className="input-field"
               placeholder="Enter Salary Expectation"
               required
+              min="0"
             />
           </div>
         </div>
@@ -259,7 +279,7 @@ function Tracker() {
 
         {/* Feedback Time */}
         <div className="form-group">
-          <label>Feedback Time (in weeks):</label>
+          <label>Feedback or Waiting Time (in weeks):</label>
           <span className="feedback-label">{getFeedbackLabel(form.feedbacktime)}</span>
           <div className="slider-wrapper">
             <div className="range-container">

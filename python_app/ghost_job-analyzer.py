@@ -19,7 +19,7 @@ def connect_db():
 
 def fetch_applications(conn):
     """Fetch application data from the database."""
-    query = 'SELECT * FROM "Applications"'  # Ensure correct table name casing
+    query = 'SELECT * FROM "Applications"'
     with conn.cursor(cursor_factory=DictCursor) as cur:
         cur.execute(query)
         return cur.fetchall()
@@ -40,7 +40,8 @@ def analyze_applications(applications):
             company_metrics[company_id] = {
                 'total_feedback_time': 0,
                 'count': 0,
-                'long_feedback_time_count': 0
+                'long_feedback_time_count': 0,
+                'num_rejections': 0
             }
         
         metrics = company_metrics[company_id]
@@ -48,24 +49,30 @@ def analyze_applications(applications):
         metrics['count'] += 1
         if app['feedbacktime'] > feedback_time_threshold:
             metrics['long_feedback_time_count'] += 1
+        if app['applicationstatus'] == 'Rejected':
+            metrics['num_rejections'] += 1
 
     results = {}
     for company_id, metrics in company_metrics.items():
         total_applications = metrics['count']
+        num_rejections = metrics['num_rejections']
         if total_applications == 0:
             avg_feedback_time = 0
             ghost_job_probability = 0
             is_ghost_job = False
+            rejection_to_application_ratio = 0
         else:
             avg_feedback_time = metrics['total_feedback_time'] / total_applications
             ghost_job_probability = (metrics['long_feedback_time_count'] / total_applications) * 100
             is_ghost_job = ghost_job_probability > ghost_job_probability_threshold
+            rejection_to_application_ratio = num_rejections / total_applications
 
         results[company_id] = {
             'avg_feedback_time': avg_feedback_time,
             'num_applicants': total_applications,
             'is_ghost_job': is_ghost_job,
-            'ghost_job_probability': ghost_job_probability
+            'ghost_job_probability': ghost_job_probability,
+            'rejection_to_application_ratio': rejection_to_application_ratio
         }
 
     return results
@@ -127,6 +134,7 @@ def update_company(conn, company_id, metrics):
             numapplicants = %s,
             avgfeedbacktime = %s,
             ghostjobprobability = %s,
+            rejection_to_application_ratio = %s,
             updated_at = CURRENT_TIMESTAMP
         WHERE id = %s
     """
@@ -139,6 +147,7 @@ def update_company(conn, company_id, metrics):
             metrics['num_applicants'],
             metrics['avg_feedback_time'] if metrics['avg_feedback_time'] is not None else 0,
             ghostjobprobability,
+            metrics['rejection_to_application_ratio'],
             company_id
         ))
         conn.commit()
