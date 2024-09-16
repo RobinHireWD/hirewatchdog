@@ -32,11 +32,11 @@ if (!DB_USER || !DB_PASSWORD || !DB_HOST || !DB_NAME) {
   process.exit(1);
 }
 
-const DATABASE_URL = `postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:5432/${DB_NAME}`;
+const DATABASE_URL = postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:5432/${DB_NAME};
 
 // Log environment variables for debugging
 logger.info('Environment Variables Loaded');
-logger.info(`DATABASE_URL: ${DATABASE_URL}`);
+logger.info(DATABASE_URL: ${DATABASE_URL});
 
 // Set up PostgreSQL connection using Sequelize
 const sequelize = new Sequelize(DATABASE_URL, {
@@ -108,7 +108,7 @@ const Application = sequelize.define('Application', {
   underscored: true
 });
 
-// Define Company model with num_feedback instead of feedbacktime
+// Define Company model with rejection_to_application_ratio
 const Company = sequelize.define('Company', {
   id: {
     type: DataTypes.INTEGER,
@@ -148,6 +148,10 @@ const Company = sequelize.define('Company', {
   ghostjobprobability: {
     type: DataTypes.FLOAT,
     defaultValue: 0
+  },
+  rejection_to_application_ratio: {
+    type: DataTypes.FLOAT,
+    defaultValue: 0
   }
 }, {
   tableName: 'Companies',
@@ -166,7 +170,7 @@ const syncAndStartServer = async () => {
     logger.info('Database synchronized');
 
     app.listen(PORT, () => {
-      logger.info(`Server running on http://localhost:${PORT}`);
+      logger.info(Server running on http://localhost:${PORT});
     });
   } catch (error) {
     logger.error('Error synchronizing the database:', error);
@@ -176,8 +180,8 @@ const syncAndStartServer = async () => {
 
 // Error handling helper function
 const handleError = (res, error, message) => {
-  logger.error(`${message}: ${error.message}`, { error });
-  res.status(500).json({ error: `${message}: ${error.message}` });
+  logger.error(${message}: ${error.message}, { error });
+  res.status(500).json({ error: ${message}: ${error.message} });
 };
 
 // Helper function to find or create a company
@@ -188,7 +192,7 @@ const findOrCreateCompany = async (companyName) => {
   return company;
 };
 
-// Routes for Applications
+// Route for creating applications
 app.post('/applications', async (req, res) => {
   logger.info('Received request to create application');
   try {
@@ -215,12 +219,12 @@ app.post('/applications', async (req, res) => {
     if (listingduration === undefined) missingFields.push('listingduration');
 
     if (missingFields.length > 0) {
-      return res.status(400).json({ error: `Missing required fields: ${missingFields.join(', ')}` });
+      return res.status(400).json({ error: Missing required fields: ${missingFields.join(', ')} });
     }
 
     // Find or create the company
     const companyRecord = await findOrCreateCompany(company);
-    logger.info(`Company '${company}' found`, { companyId: companyRecord.id });
+    logger.info(Company '${company}' found, { companyId: companyRecord.id });
 
     // Create a new application entry
     const newApplication = await Application.create({
@@ -244,6 +248,22 @@ app.post('/applications', async (req, res) => {
       { where: { id: companyRecord.id } }
     );
     logger.info('Company numapplicants updated', { companyId: companyRecord.id });
+
+    // Calculate rejection_to_application_ratio
+    const { count: rejectionCount } = await Application.findAndCountAll({
+      where: {
+        company_id: companyRecord.id,
+        applicationstatus: 'Rejected'
+      }
+    });
+
+    const rejectionToApplicationRatio = rejectionCount / Math.max(numapplicants, 1); // Avoid division by zero
+
+    await Company.update(
+      { rejection_to_application_ratio: rejectionToApplicationRatio },
+      { where: { id: companyRecord.id } }
+    );
+    logger.info('Company rejection_to_application_ratio updated', { companyId: companyRecord.id, rejectionToApplicationRatio });
 
     res.status(201).json(newApplication);
   } catch (error) {

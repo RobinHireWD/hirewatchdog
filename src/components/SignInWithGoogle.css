@@ -1,0 +1,49 @@
+/* src/components/SignInWithGoogle.css */
+
+.sign-in-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh; /* Full height of the viewport */
+    padding: 1rem;
+  }
+  
+  .sign-in-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .sign-in-image {
+    width: 500px;
+    height: auto;
+    margin-bottom: 20px;
+  }
+  
+  .sign-in-message {
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+    text-align: center;
+    color: #333;
+  }
+  
+  .sign-in-buttons {
+    margin-top: 20px;
+  }
+  
+  .sign-in-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+  }
+  
+  .sign-in-button:hover {
+    background-color: #0056b3;
+  }
+  

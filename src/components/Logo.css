@@ -1,0 +1,25 @@
+/* src/components/Logo.css */
+
+/* Container for the logo before sign-in */
+.logo-header {
+    display: flex;
+    justify-content: center; /* Center the logo horizontally */
+    align-items: center; /* Center the logo vertically */
+    padding: 1.5rem 2rem; /* Match the header padding */
+    background: linear-gradient(95deg, #4923B4 0%, #E878CF 100%); /* Match the header background */
+    box-shadow: none; /* Remove any shadow */
+    position: relative; /* Ensure the logo stays in the right position */
+    z-index: 10; /* Ensure it stays on top of other elements */
+  }
+  
+  .logo-link {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+  }
+  
+  .logo {
+    width: 200px; /* Match the header logo size */
+    height: auto; /* Maintain aspect ratio */
+  }
+  

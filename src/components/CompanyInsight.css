@@ -99,7 +99,7 @@ h1 {
   border: 1px solid #ddd;
   border-radius: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  background-color: #fff;
+  background-color: #efefef86;
   position: relative; /* Position relative for tooltip */
   margin-left: 5px; /* Space between card and container edge */
 }
