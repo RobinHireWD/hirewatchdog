@@ -23,10 +23,6 @@ const capitalizeEachWord = (string) => {
     .join(' ');
 };
 
-const capitalizeFirstLetter = (string) => {
-  return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
-};
-
 function Tracker() {
   const [applications, setApplications] = useState([]);
   const [form, setForm] = useState({
@@ -299,18 +295,16 @@ function Tracker() {
         <div className="form-group">
           <label>Listing Duration (in weeks):</label>
           <span className="listing-duration-label">{getListingDurationLabel(form.listingduration)}</span>
-          <div className="form-group">
-            <div className="slider-wrapper">
-              <div className="range-container">
-                <input
-                  type="range"
-                  min="1"
-                  max="15"
-                  value={form.listingduration}
-                  onChange={handleListingDurationChange}
-                />
-                <span>{form.listingduration} weeks</span>
-              </div>
+          <div className="slider-wrapper">
+            <div className="range-container">
+              <input
+                type="range"
+                min="1"
+                max="15"
+                value={form.listingduration}
+                onChange={handleListingDurationChange}
+              />
+              <span>{form.listingduration} weeks</span>
             </div>
           </div>
         </div>

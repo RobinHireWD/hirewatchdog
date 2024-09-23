@@ -296,8 +296,9 @@ h1 {
   display: none; /* Hide by default */
 }
 
-.company-card:hover .tooltip-content {
-  display: block; /* Show on hover */
+.company-card.hovered {
+  transform: scale(1.05); /* Slightly scale up */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Add shadow for effect */
 }
 
 .company-card-left .tooltip-content {

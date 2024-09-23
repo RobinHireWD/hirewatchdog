@@ -128,7 +128,7 @@ const CompanyInsight = () => {
             filteredAndSortedInsights.map((company) => (
               <div
                 key={company.id}
-                className="company-card"
+                className={`company-card ${hoveredCompany === company.id ? 'hovered' : ''}`}
                 onMouseEnter={() => setHoveredCompany(company.id)}
                 onMouseLeave={() => setHoveredCompany(null)}
               >
@@ -227,12 +227,12 @@ const CompanyInsight = () => {
                       <p>Ghost Job Probability</p>
                       <div className="ghost-job-circle">
                         <CircularProgressbar
-                          value={scaleProbabilityToPercentage(company.ghostjobprobability)}
-                          text={`${(company.ghostjobprobability * 100).toFixed(0)}%`}
+                          value={scaleProbabilityToPercentage(company.ghost_job_probability)}
+                          text={`${(company.ghost_job_probability * 100).toFixed(0)}%`}
                           strokeWidth={8}
                           styles={{
                             path: {
-                              stroke: getGhostJobColor(company.ghostjobprobability),
+                              stroke: getGhostJobColor(company.ghost_job_probability),
                             },
                             text: {
                               fill: '#000000',
