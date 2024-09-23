@@ -14,16 +14,16 @@ HireWatchdog is a unique platform designed to provide job application insights, 
 ## Tech Stack
 - **Frontend**: React.js, HTML, CSS, JavaScript
 - **Backend**: Node.js, Express.js
-- **Database**: [Your Database of choice, e.g., MongoDB, PostgreSQL, etc.]
+- **Database**: PostgreSQL
 - **Authentication**: Firebase Authentication
 - **Algorithms**: Python for data processing
 
 ## Getting Started
 
 ### Prerequisites
-- Node.js (version X.X.X or later)
-- Python (version X.X.X or later)
-- A database setup (MongoDB, PostgreSQL, etc.)
+- Node.js
+- Python 
+- A database setup (PostgreSQL)
 
 ### Installation
 1. Clone the repository:
